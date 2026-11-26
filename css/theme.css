@@ -25,38 +25,36 @@
 }
 
 /* ---------------------------------------------------------------------
-   ФОН: м'які кольорові плями + великі смуги-водяний знак
+   ФОН: фото джунглів (img/jungle-bg.jpg), а вміст сторінки лежить
+   на великій «матовій скляній» панелі поверх нього.
+   Щоб змінити фото — замініть файл img/jungle-bg.jpg.
    --------------------------------------------------------------------- */
-body { background-color: var(--bg); }
+body { background-color: var(--jungle); }
 
+/* Фото на весь екран, нерухоме під час прокручування.
+   Розмите (blur) — це і є «матове скло» на всю сторінку.
+   inset: -40px — щоб розмиті краї не давали світлу рамку. */
 body::before {
   content: "";
   position: fixed;
-  inset: -10%;
+  inset: -40px;
   z-index: -2;
   pointer-events: none;
-  background:
-    radial-gradient(38% 32% at 10% 8%,  rgba(232, 115, 28, .30), transparent 70%),
-    radial-gradient(34% 30% at 92% 12%, rgba(79, 122, 48, .24),  transparent 70%),
-    radial-gradient(46% 40% at 82% 92%, rgba(232, 217, 184, .85), transparent 70%),
-    radial-gradient(34% 34% at 6% 88%,  rgba(31, 58, 43, .14),   transparent 70%);
+  background: url("../img/jungle-bg.jpg") center / cover no-repeat;
+  filter: blur(12px) saturate(140%);
 }
+/* Світлий шар скла поверх фото + теплий відблиск.
+   Прозорість скла — числа .50/.42: менше число = прозоріше. */
 body::after {
   content: "";
   position: fixed;
-  right: -18vmax;
-  top: 18vh;
+  inset: 0;
   z-index: -1;
-  width: 60vmax;
-  height: 60vmax;
   pointer-events: none;
-  background: var(--stripes) 0 0 / 22vmax 22vmax;
-  opacity: .06;
-  transform: rotate(-14deg);
-  -webkit-mask-image: radial-gradient(closest-side, #000 30%, transparent 100%);
-          mask-image: radial-gradient(closest-side, #000 30%, transparent 100%);
+  background:
+    radial-gradient(50% 40% at 12% 0%, rgba(232, 115, 28, .22), transparent 70%),
+    linear-gradient(180deg, rgba(250, 248, 243, .50), rgba(250, 248, 243, .42));
 }
-body.vik-7-9::after { opacity: .035; }
 
 /* ---------------------------------------------------------------------
    ТИГРОВІ СМУГИ В ТЕКСТІ
@@ -476,7 +474,10 @@ body.vik-7-9 .topic-card { background: var(--glass); border: 1px solid var(--gla
 .footer {
   position: relative;
   margin-top: 24px;
-  background: linear-gradient(180deg, #24443A, var(--jungle));
+  /* Темне скло — крізь нього видно джунглі */
+  background: rgba(12, 28, 20, .55);
+  -webkit-backdrop-filter: blur(14px);
+          backdrop-filter: blur(14px);
 }
 .footer::before {
   content: "";
@@ -494,6 +495,7 @@ body.vik-7-9 .topic-card { background: var(--glass); border: 1px solid var(--gla
 /* Браузер не вміє розмивати фон — робимо панелі майже непрозорими */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .topbar, .menu { background: rgba(250, 248, 243, .96); }
+  .footer { background: var(--jungle); }
 }
 /* Людина просить менше прозорості — без скла */
 @media (prefers-reduced-transparency: reduce) {
@@ -503,7 +505,8 @@ body.vik-7-9 .topic-card { background: var(--glass); border: 1px solid var(--gla
     -webkit-backdrop-filter: none;
             backdrop-filter: none;
   }
-  body::after { display: none; }
+  body::before { display: none; }
+  body { background: var(--bg); }
 }
 
 @media (max-width: 520px) {
