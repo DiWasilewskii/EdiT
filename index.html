@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/style.css?v=2026-11-26h">
+  <link rel="stylesheet" href="css/style.css?v=2026-11-27b">
   <!-- Сучасний вигляд: скло й тигрові смуги -->
-  <link rel="stylesheet" href="css/theme.css?v=2026-11-26h">
+  <link rel="stylesheet" href="css/theme.css?v=2026-11-27b">
 </head>
 <body>
 
@@ -24,9 +24,15 @@
       <span class="topbar__word" id="headerLogo" aria-hidden="true">EdiT</span>
     </a>
 
-    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mainMenu">
-      <span aria-hidden="true">☰</span> Меню
-    </button>
+    <div class="topbar__actions">
+      <!-- Кнопка «Головна»: app.js ховає її, коли ми вже на головній -->
+      <a class="home-btn" id="homeBtn" href="#/" hidden>
+        <img class="ico" src="img/icons/ui-home.svg" alt="" aria-hidden="true"> <span class="home-btn__text">Головна</span>
+      </a>
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mainMenu">
+        <span aria-hidden="true">☰</span> Меню
+      </button>
+    </div>
 
     <!-- Меню з класами: наповнюється з app.js -->
     <nav class="menu" id="mainMenu" aria-label="Класи"></nav>
@@ -42,8 +48,8 @@
   <!-- Спочатку дані тем і уроків, потім логіка сайту.
        ?v=… — номер версії: після змін у файлах змініть його всюди,
        щоб браузери одразу завантажили нові файли, а не старі з кешу. -->
-  <script src="js/topics.js?v=2026-11-26h"></script>
-  <script src="js/lessons.js?v=2026-11-26h"></script>
-  <script src="js/app.js?v=2026-11-26h"></script>
+  <script src="js/topics.js?v=2026-11-27b"></script>
+  <script src="js/lessons.js?v=2026-11-27b"></script>
+  <script src="js/app.js?v=2026-11-27b"></script>
 </body>
 </html>

@@ -26,6 +26,7 @@
   ];
   const КЛЮЧ_ПРОГРЕСУ = "edit-progress";
   const КЛЮЧ_ФІЛЬТРІВ = "edit-filters";
+  const КЛЮЧ_РОЗДІЛІВ = "edit-open-sections";   // які розділи класів розгорнуто
 
   const app = document.getElementById("app");
   const menu = document.getElementById("mainMenu");
@@ -300,8 +301,7 @@
     const теми = темиКласу(клас);
 
     let html = навігація([{ назва: "Головна", посилання: "#/" }, { назва: клас + " клас" }], "#/") +
-      '<div class="page-head"><h1>' + клас + ' клас</h1>' +
-      '<a class="btn btn--orange" href="#/">' + ui("home") + ' На головну</a></div>';
+      '<div class="page-head"><h1>' + клас + " клас</h1></div>";
 
     if (!теми.length) {
       html += порожньо("Теми скоро з'являться");
@@ -314,19 +314,47 @@
         if (!група) { група = { назва: назва, теми: [] }; групи.push(група); }
         група.теми.push(т);
       });
-      групи.forEach(function (г) {
-        if (г.назва) html += '<h2 class="section-title">' + esc(г.назва) + "</h2>";
-        html += '<div class="topics">';
-        г.теми.forEach(function (т) {
+      // Розділи згорнуті: картки тем з'являються після натискання на назву розділу.
+      // Розгорнуті розділи запам'ятовуються, щоб після повернення з теми не відкривати їх знову.
+      const відкриті = прочитати(КЛЮЧ_РОЗДІЛІВ, {});
+      групи.forEach(function (г, гІ) {
+        const картки = г.теми.map(function (т) {
           const мітка = урокДля(клас + "-" + т.номер) ? значок("img/icons/ui-play.svg", "ico--sm") + " Інтерактивний урок" : "";
-          html += карткаТеми(т, "#/klas/" + клас + "/tema/" + т.номер, пройдено(ключКласу(т)), мітка);
-        });
-        html += "</div>";
+          return карткаТеми(т, "#/klas/" + клас + "/tema/" + т.номер, пройдено(ключКласу(т)), мітка);
+        }).join("");
+        // Теми без розділу показуємо одразу, без кнопки
+        if (!г.назва) { html += '<div class="topics">' + картки + "</div>"; return; }
+
+        const ключ = клас + ":" + г.назва;
+        const відкрито = !!відкриті[ключ];
+        const готово = г.теми.filter(function (т) { return пройдено(ключКласу(т)); }).length;
+        const idКарток = "rozdil-" + клас + "-" + гІ;
+        html += '<section class="section-group' + (відкрито ? " is-open" : "") + '">' +
+          '<h2 class="section-title section-toggle-wrap"><button type="button" class="section-toggle" aria-expanded="' + відкрито +
+          '" aria-controls="' + idКарток + '" data-key="' + esc(ключ) + '">' +
+          '<span class="section-toggle__name">' + esc(г.назва) + "</span>" +
+          '<span class="section-toggle__meta">' + г.теми.length + " " + множина(г.теми.length, "тема", "теми", "тем") +
+          " · пройдено " + готово + "</span>" +
+          '<span class="section-toggle__arrow" aria-hidden="true">▾</span></button></h2>' +
+          '<div class="topics" id="' + idКарток + '"' + (відкрито ? "" : " hidden") + ">" + картки + "</div></section>";
       });
     }
 
     app.innerHTML = html;
     намалюватиМеню(клас, false);
+
+    // Розгортання / згортання розділів
+    app.querySelectorAll(".section-toggle").forEach(function (к) {
+      к.addEventListener("click", function () {
+        const відкрито = к.getAttribute("aria-expanded") !== "true";
+        к.setAttribute("aria-expanded", String(відкрито));
+        к.closest(".section-group").classList.toggle("is-open", відкрито);
+        document.getElementById(к.getAttribute("aria-controls")).hidden = !відкрито;
+        const стан = прочитати(КЛЮЧ_РОЗДІЛІВ, {});
+        if (відкрито) стан[к.dataset.key] = true; else delete стан[к.dataset.key];
+        записати(КЛЮЧ_РОЗДІЛІВ, стан);
+      });
+    });
   }
 
   /* ---------- «Корисне поза програмою» ---------- */
@@ -335,8 +363,7 @@
     встановитиВік(фільтр.вік || null);
 
     let html = навігація([{ назва: "Головна", посилання: "#/" }, { назва: "Корисне поза програмою" }], "#/") +
-      '<div class="page-head"><h1>Корисне поза програмою</h1>' +
-      '<a class="btn btn--orange" href="#/">' + ui("home") + ' На головну</a></div>' +
+      '<div class="page-head"><h1>Корисне поза програмою</h1></div>' +
       "<p>Цікаві теми, яких немає в підручнику. Обери свій вік і те, що тобі до вподоби.</p>";
 
     // Фільтр за віком
@@ -1258,6 +1285,9 @@
     прибрати();
     // Старі посилання …/urok відкривають тему й прокручують до інтерактивного уроку
     let доУроку = false;
+
+    // Кнопка «Головна» в шапці — на всіх сторінках, крім самої головної
+    document.getElementById("homeBtn").hidden = !частини.length;
 
     if (!частини.length) {
       сторінкаГоловна();
