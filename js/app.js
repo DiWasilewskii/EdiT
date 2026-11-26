@@ -378,8 +378,8 @@
   }
 
   /* ---------- Сторінка теми (Пояснення / Покрокове завдання / Перевір себе) ---------- */
-  // адресаУроку — посилання на інтерактивний урок (або null, якщо уроку немає)
-  function сторінкаТеми(тема, ключ, крихти, назад, вік, адресаУроку, кількістьСлайдів) {
+  // урок — список слайдів інтерактивного уроку з js/lessons.js (або null)
+  function сторінкаТеми(тема, ключ, крихти, назад, вік, урок) {
     встановитиВік(вік);
     const абзаци = Array.isArray(тема.пояснення) ? тема.пояснення : [тема.пояснення || ""];
     const кроки = тема.кроки || [];
@@ -390,19 +390,23 @@
       '<div><div class="topic-head__meta">Тема ' + esc(тема.номер) + "</div><h1>" + esc(тема.назва) + "</h1></div></div>" +
       "<p>" + esc(тема.опис) + "</p>";
 
-    // Велика кнопка інтерактивного уроку
-    if (адресаУроку) {
-      html += '<a class="lesson-cta" href="' + адресаУроку + '">' +
+    // Кнопка, що прокручує до інтерактивного уроку на цій сторінці
+    if (урок) {
+      const вправ = урок.filter(function (с) { return ВПРАВИ.indexOf(с.тип) !== -1; }).length;
+      html += '<button type="button" class="lesson-cta" data-to-urok>' +
         '<span class="lesson-cta__play">' + значок("img/icons/ui-play-orange.svg") + "</span>" +
-        '<span class="lesson-cta__text"><b>Інтерактивний урок</b><small>слайди та вправи · ' + кількістьСлайдів + " кроків</small></span>" +
-        (пройдено("u-" + ключ) ? '<span class="lesson-cta__done">пройдено ✓</span>' : "") + "</a>";
+        '<span class="lesson-cta__text"><b>Інтерактивний урок</b><small>' + вправ + " вправ — нижче на цій сторінці ↓</small></span>" +
+        (пройдено("u-" + ключ) ? '<span class="lesson-cta__done">пройдено ✓</span>' : "") + "</button>";
     }
 
     // 1. Пояснення
     html += '<section class="block"><h2>' + ui("book") + ' Пояснення</h2>' +
       абзаци.map(function (а) { return "<p>" + а + "</p>"; }).join("") + "</section>";
 
-    // 2. Покрокове завдання
+    // 2. Інтерактивний урок (вправи прямо на сторінці)
+    if (урок) html += урокНаСторінці(урок, ключ);
+
+    // 3. Покрокове завдання
     if (кроки.length) {
       html += '<section class="block"><h2>' + ui("steps") + ' Покрокове завдання</h2>' +
         '<p class="steps-hint">Натискай на крок, коли виконаєш його.</p><ol class="steps">';
@@ -415,7 +419,7 @@
 
     if (тема.підказка) html += тайгер(тема.підказка);
 
-    // 3. Перевір себе
+    // 4. Перевір себе
     if (питання.length) {
       html += '<section class="block"><h2>' + ui("quiz") + ' Перевір себе</h2>';
       питання.forEach(function (п, і) {
@@ -433,6 +437,14 @@
     html += '<div class="done-bar" id="doneBar"></div>';
 
     app.innerHTML = html;
+
+    // --- Інтерактивний урок ---
+    if (урок) {
+      запуститиУрок(урок, ключ);
+      app.querySelector("[data-to-urok]").addEventListener("click", function () {
+        document.getElementById("urok").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
 
     // --- Кроки: відмітка виконаного ---
     app.querySelectorAll(".step").forEach(function (к) {
@@ -494,7 +506,7 @@
   }
 
   /* =================================================================
-     ІНТЕРАКТИВНИЙ УРОК: слайди + вправи
+     ІНТЕРАКТИВНИЙ УРОК: пояснення + вправи прямо на сторінці теми
      Дані уроків — у файлі js/lessons.js (об'єкт УРОКИ).
      Тут тільки «двигун», який показує слайди різних типів.
      ================================================================= */
@@ -531,7 +543,7 @@
   }
 
   function заголовокВправи(с) {
-    return '<p class="slide__kind">' + ui("puzzle") + ' Вправа</p><h2>' + (с.завдання || "") + "</h2>";
+    return '<p class="slide__kind">' + ui("puzzle") + ' Вправа</p><h3>' + (с.завдання || "") + "</h3>";
   }
 
   /* ---------- Типи слайдів ----------
@@ -544,13 +556,13 @@
       const текст = (Array.isArray(с.текст) ? с.текст : [с.текст || ""])
         .map(function (п) { return "<p>" + п + "</p>"; }).join("");
       el.innerHTML = (с.іконка ? '<div class="slide__icon">' + значок(с.іконка) + "</div>" : "") +
-        "<h2>" + (с.заголовок || "") + "</h2>" + текст + (с.тайгер ? тайгер(с.тайгер) : "");
+        "<h3>" + (с.заголовок || "") + "</h3>" + текст + (с.тайгер ? тайгер(с.тайгер) : "");
     },
 
     /* Картки, які перевертаються */
     "картки": function (с, el) {
       el.innerHTML = (с.іконка ? '<div class="slide__icon">' + значок(с.іконка) + "</div>" : "") +
-        "<h2>" + (с.заголовок || "") + "</h2>" +
+        "<h3>" + (с.заголовок || "") + "</h3>" +
         '<p class="slide__hint">Натискай на картки, щоб перевернути їх.</p><div class="flip-grid">' +
         с.картки.map(function (к) {
           return '<button type="button" class="flip" aria-pressed="false"><span class="flip__front">' + к.лице +
@@ -565,7 +577,7 @@
 
     /* Вибір однієї правильної відповіді */
     "вибір": function (с, el, готово) {
-      el.innerHTML = '<p class="slide__kind">' + ui("question") + ' Запитання</p><h2>' + с.питання + "</h2>" +
+      el.innerHTML = '<p class="slide__kind">' + ui("question") + ' Запитання</p><h3>' + с.питання + "</h3>" +
         '<div class="options options--col">' + с.варіанти.map(function (в, і) {
           return '<button type="button" class="option" data-v="' + і + '">' + в + "</button>";
         }).join("") + '</div><p class="feedback" aria-live="polite"></p>';
@@ -912,7 +924,8 @@
         const початок = performance.now();
         const тривалість = Math.min(2200, 250 + т.length * 40);
         (function крок(зараз) {
-          const скільки = Math.min(т.length - 1, Math.floor((зараз - початок) / тривалість * (т.length - 1)));
+          // Math.max(0, …): час першого кадру буває трохи меншим за «початок»
+          const скільки = Math.max(0, Math.min(т.length - 1, Math.floor((зараз - початок) / тривалість * (т.length - 1))));
           ctx.clearRect(0, 0, W, H);
           ctx.lineWidth = 3; ctx.lineJoin = "round"; ctx.lineCap = "round";
           ctx.strokeStyle = "#E8731C";
@@ -967,7 +980,7 @@
         '<button type="button" data-key="ArrowLeft" aria-label="Ліворуч">←</button>' +
         '<button type="button" data-key="ArrowDown" aria-label="Вниз">↓</button>' +
         '<button type="button" data-key="ArrowRight" aria-label="Праворуч">→</button></div></div>' +
-        '<div class="game__side"><p class="slide__hint">Ось програма цієї гри. Блок, що спрацював, підсвічується:</p>' +
+        '<div class="game__side"><p class="slide__hint">Клацни по полю, щоб керувати стрілками на клавіатурі. Ось програма цієї гри. Блок, що спрацював, підсвічується:</p>' +
         '<div class="game__code"><div class="blk blk--event">коли натиснуто 🏴</div>' +
         '<div class="blk blk--control">завжди<div class="blk-body">' +
         Object.keys(команди).map(function (к) {
@@ -1020,111 +1033,74 @@
       el.querySelectorAll(".game__pad button").forEach(function (б) {
         б.addEventListener("click", function () { натиснуто(б.dataset.key); });
       });
-      function клавіші(e) {
-        if (команди[e.key] && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) {
+      // Стрілки на клавіатурі працюють, коли гра «у фокусі» (після клацання по ній),
+      // щоб в інших місцях сторінки стрілки й далі гортали сторінку
+      const гра = el.querySelector(".game");
+      гра.tabIndex = 0;
+      гра.addEventListener("click", function () { гра.focus({ preventScroll: true }); });
+      гра.addEventListener("keydown", function (e) {
+        if (команди[e.key]) {
           e.preventDefault();
           натиснуто(e.key);
         }
-      }
-      document.addEventListener("keydown", клавіші);
-      доПрибирання.push(function () { document.removeEventListener("keydown", клавіші); });
+      });
 
       новаЗірка();
       намалювати();
     }
   };
 
-  // Типи, які є вправами (щоб перейти далі, їх треба виконати або пропустити)
+  // Типи, які є вправами (їх треба виконати; решта — пояснення)
   const ВПРАВИ = ["вибір", "сортування", "пари", "порядок", "пропуск", "черепашка", "стрілки"];
 
-  /* ---------- Сторінка уроку ---------- */
-  function сторінкаУроку(тема, слайди, ключ, крихти, адресаТеми, вік) {
-    встановитиВік(вік);
-    const ключУроку = "u-" + ключ;
-    const виконано = слайди.map(function (с) { return ВПРАВИ.indexOf(с.тип) === -1; });
-    const пропущено = слайди.map(function () { return false; });
-    let поточний = 0;
-
-    app.innerHTML = навігація(крихти, адресаТеми) +
-      '<div class="lesson">' +
-        '<div class="topic-head"><span class="topic-head__icon">' + значок(тема.іконка || "img/icons/ui-book.svg") + "</span>" +
-        '<div><div class="topic-head__meta">Інтерактивний урок · Тема ' + esc(тема.номер) + "</div><h1>" + esc(тема.назва) + "</h1></div></div>" +
-        '<div class="lesson__bar" aria-hidden="true"><div class="lesson__bar-fill"></div></div>' +
-        '<section class="lesson__stage"></section>' +
-        '<div class="lesson__nav">' +
-          '<button type="button" class="btn btn--ghost" data-prev>← Назад</button>' +
-          '<span class="lesson__count"></span>' +
-          '<button type="button" class="btn btn--orange" data-next>Далі →</button>' +
-        "</div>" +
-        '<p class="lesson__skip"><button type="button" class="link-btn" data-skip>Пропустити вправу</button></p>' +
-      "</div>";
-
-    const сцена = app.querySelector(".lesson__stage");
-    const кнопкаНазад = app.querySelector("[data-prev]");
-    const кнопкаДалі = app.querySelector("[data-next]");
-    const кнопкаПропуск = app.querySelector("[data-skip]");
-    const лічильник = app.querySelector(".lesson__count");
-    const смуга = app.querySelector(".lesson__bar-fill");
-    const навігаціяУроку = app.querySelector(".lesson__nav");
-
-    function оновитиКнопки() {
-      const фінал = поточний >= слайди.length;
-      кнопкаНазад.disabled = поточний === 0;
-      кнопкаДалі.disabled = !фінал && !виконано[поточний];
-      навігаціяУроку.hidden = фінал;
-      кнопкаПропуск.parentNode.hidden = фінал || виконано[поточний];
-      лічильник.textContent = фінал ? "" : (поточний + 1) + " / " + слайди.length;
-      смуга.style.width = (Math.min(поточний, слайди.length) / слайди.length * 100) + "%";
-    }
-
-    function показати(і) {
-      прибрати();
-      поточний = і;
-      if (і >= слайди.length) {
-        фінал();
-      } else {
-        const с = слайди[і];
-        сцена.innerHTML = '<div class="slide"></div>';
-        (ТИПИ_СЛАЙДІВ[с.тип] || ТИПИ_СЛАЙДІВ["слайд"])(с, сцена.firstChild, function () {
-          виконано[і] = true;
-          оновитиКнопки();
-        });
-      }
-      оновитиКнопки();
-      app.querySelector(".lesson").scrollIntoView({ block: "start", behavior: "smooth" });
-    }
-
-    function фінал() {
-      позначити(ключУроку, true);
-      const вправ = слайди.filter(function (с) { return ВПРАВИ.indexOf(с.тип) !== -1; }).length;
-      const пропуск = пропущено.filter(Boolean).length;
-      сцена.innerHTML = '<div class="slide slide--final"><div class="slide__icon" aria-hidden="true">🎉</div>' +
-        "<h2>Урок завершено!</h2>" +
-        "<p>Виконано вправ: <b>" + (вправ - пропуск) + " з " + вправ + "</b>.</p>" +
-        тайгер(пропуск
-          ? "Деякі вправи ти пропустив. Повернися до них, коли будеш готовий — вони чекають."
-          : "Молодець! Тепер відкрий тему і пройди «Перевір себе».", пропуск ? "think" : "happy") +
-        '<div class="done-bar"><a class="btn btn--orange" href="' + адресаТеми + '">До теми і тесту</a>' +
-        '<button type="button" class="btn btn--ghost" data-restart>Пройти урок ще раз</button></div></div>';
-      сцена.querySelector("[data-restart]").addEventListener("click", function () {
-        for (let і = 0; і < слайди.length; і++) {
-          виконано[і] = ВПРАВИ.indexOf(слайди[і].тип) === -1;
-          пропущено[і] = false;
-        }
-        показати(0);
-      });
-    }
-
-    кнопкаНазад.addEventListener("click", function () { if (поточний > 0) показати(поточний - 1); });
-    кнопкаДалі.addEventListener("click", function () { показати(поточний + 1); });
-    кнопкаПропуск.addEventListener("click", function () {
-      пропущено[поточний] = true;
-      виконано[поточний] = true;
-      показати(поточний + 1);
-    });
-
-    показати(0);
+  /* ---------- Інтерактивний урок прямо на сторінці теми ----------
+     Усі пояснення й вправи уроку йдуть одна за одною (без слайдів).
+     Коли всі вправи виконано — урок позначається пройденим. */
+  function урокНаСторінці(слайди, ключ) {
+    const html = слайди.map(function (с, і) {
+      const вправа = ВПРАВИ.indexOf(с.тип) !== -1;
+      return '<div class="lesson-item' + (вправа ? " lesson-item--ex" : "") + '" data-i="' + і + '"><div class="slide"></div></div>';
+    }).join("");
+    const вправ = слайди.filter(function (с) { return ВПРАВИ.indexOf(с.тип) !== -1; }).length;
+    return '<section class="block lesson-inline" id="urok">' +
+      "<h2>" + ui("puzzle") + " Інтерактивний урок</h2>" +
+      '<div class="lesson-inline__status"><div class="lesson__bar" aria-hidden="true"><div class="lesson__bar-fill"></div></div>' +
+      '<p class="lesson-inline__count" aria-live="polite">Виконано вправ: <b>0 з ' + вправ + "</b></p></div>" +
+      html + '<div class="lesson-inline__done"></div></section>';
   }
+
+  function запуститиУрок(слайди, ключ) {
+    const блок = document.getElementById("urok");
+    if (!блок) return;
+    const ключУроку = "u-" + ключ;
+    const вправ = слайди.filter(function (с) { return ВПРАВИ.indexOf(с.тип) !== -1; }).length;
+    const виконані = new Set();
+    const лічильник = блок.querySelector(".lesson-inline__count");
+    const смуга = блок.querySelector(".lesson__bar-fill");
+    const фінал = блок.querySelector(".lesson-inline__done");
+
+    function оновити() {
+      лічильник.innerHTML = "Виконано вправ: <b>" + виконані.size + " з " + вправ + "</b>" +
+        (пройдено(ключУроку) && виконані.size < вправ ? " · раніше урок уже пройдено ✓" : "");
+      смуга.style.width = (вправ ? виконані.size / вправ * 100 : 100) + "%";
+      if (вправ && виконані.size === вправ) {
+        позначити(ключУроку, true);
+        фінал.innerHTML = тайгер("Усі вправи уроку виконано! Тепер пройди «Перевір себе» внизу сторінки.", "happy");
+      }
+    }
+
+    блок.querySelectorAll(".lesson-item").forEach(function (пункт) {
+      const і = Number(пункт.dataset.i);
+      const с = слайди[і];
+      (ТИПИ_СЛАЙДІВ[с.тип] || ТИПИ_СЛАЙДІВ["слайд"])(с, пункт.firstChild, function () {
+        виконані.add(і);
+        пункт.classList.add("is-done");
+        оновити();
+      });
+    });
+    оновити();
+  }
+
 
   /* ---------- Сторінка «не знайдено» ---------- */
   function сторінкаНемає() {
@@ -1142,6 +1118,8 @@
     const частини = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
     закритиМеню();
     прибрати();
+    // Старі посилання …/urok відкривають тему й прокручують до інтерактивного уроку
+    let доУроку = false;
 
     if (!частини.length) {
       сторінкаГоловна();
@@ -1151,18 +1129,10 @@
       if (частини[2] === "tema") {
         const тема = темиКласу(клас).find(function (т) { return String(т.номер) === частини[3]; });
         if (!тема) return сторінкаНемає();
-        const адресаТеми = "#/klas/" + клас + "/tema/" + тема.номер;
-        const урок = урокДля(клас + "-" + тема.номер);
-        const крихти = [{ назва: "Головна", посилання: "#/" }, { назва: клас + " клас", посилання: "#/klas/" + клас }];
-        if (частини[4] === "urok") {
-          if (!урок) return сторінкаНемає();
-          сторінкаУроку(тема, урок, ключКласу(тема),
-            крихти.concat([{ назва: тема.назва, посилання: адресаТеми }, { назва: "Урок" }]),
-            адресаТеми, вікКласу(клас));
-        } else {
-          сторінкаТеми(тема, ключКласу(тема), крихти.concat([{ назва: тема.назва }]),
-            "#/klas/" + клас, вікКласу(клас), урок ? адресаТеми + "/urok" : null, урок ? урок.length : 0);
-        }
+        сторінкаТеми(тема, ключКласу(тема),
+          [{ назва: "Головна", посилання: "#/" }, { назва: клас + " клас", посилання: "#/klas/" + клас }, { назва: тема.назва }],
+          "#/klas/" + клас, вікКласу(клас), урокДля(клас + "-" + тема.номер));
+        доУроку = частини[4] === "urok";
         намалюватиМеню(клас, false);
       } else {
         сторінкаКласу(клас);
@@ -1172,17 +1142,10 @@
       if (частини[1] === "tema") {
         const тема = ТЕМИ_ПОЗА_ПРОГРАМОЮ.find(function (т) { return String(т.номер) === частини[2]; });
         if (!тема) return сторінкаНемає();
-        const адресаТеми = "#/poza/tema/" + тема.номер;
-        const урок = урокДля("poza-" + тема.номер);
-        const крихти = [{ назва: "Головна", посилання: "#/" }, { назва: "Поза програмою", посилання: "#/poza" }];
-        if (частини[3] === "urok") {
-          if (!урок) return сторінкаНемає();
-          сторінкаУроку(тема, урок, ключПоза(тема),
-            крихти.concat([{ назва: тема.назва, посилання: адресаТеми }, { назва: "Урок" }]), адресаТеми, тема.вік);
-        } else {
-          сторінкаТеми(тема, ключПоза(тема), крихти.concat([{ назва: тема.назва }]),
-            "#/poza", тема.вік, урок ? адресаТеми + "/urok" : null, урок ? урок.length : 0);
-        }
+        сторінкаТеми(тема, ключПоза(тема),
+          [{ назва: "Головна", посилання: "#/" }, { назва: "Поза програмою", посилання: "#/poza" }, { назва: тема.назва }],
+          "#/poza", тема.вік, урокДля("poza-" + тема.номер));
+        доУроку = частини[3] === "urok";
         намалюватиМеню(null, true);
       } else {
         сторінкаПоза();
@@ -1192,7 +1155,8 @@
       сторінкаНемає();
     }
 
-    window.scrollTo(0, 0);
+    const урок = доУроку && document.getElementById("urok");
+    if (урок) урок.scrollIntoView(); else window.scrollTo(0, 0);
     app.focus({ preventScroll: true });
   }
 

@@ -1,0 +1,396 @@
+/* =====================================================================
+   EdiT — СУЧАСНИЙ ВИГЛЯД: «скло» і тигрові смуги
+   ---------------------------------------------------------------------
+   Цей файл підключається ПІСЛЯ style.css і змінює лише зовнішній вигляд:
+   фон, скляні панелі й кнопки, смугасті заголовки.
+   Розміщення елементів (сітки, відступи) лишається в style.css.
+   Щоб повернути простий вигляд — приберіть рядок з theme.css в index.html.
+   ===================================================================== */
+
+:root {
+  /* Скло */
+  --glass:        rgba(255, 255, 255, .58);
+  --glass-strong: rgba(255, 255, 255, .78);
+  --glass-line:   rgba(255, 255, 255, .85);
+  --glass-edge:   rgba(31, 58, 43, .12);           /* тонка темна межа */
+  --glass-blur:   blur(18px) saturate(170%);
+  --shadow-soft:  0 12px 32px -14px rgba(31, 58, 43, .28);
+  --shadow-lift:  0 22px 44px -16px rgba(31, 58, 43, .38);
+
+  /* Тигрові смуги (img/tiger-stripes.svg) */
+  --stripes: url("../img/tiger-stripes.svg");
+
+  /* Глянцевий помаранчевий для кнопок */
+  --orange-glossy: linear-gradient(180deg, #F6984F 0%, #E8731C 55%, #D8650F 100%);
+}
+
+/* ---------------------------------------------------------------------
+   ФОН: м'які кольорові плями + великі смуги-водяний знак
+   --------------------------------------------------------------------- */
+body { background-color: var(--bg); }
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 32% at 10% 8%,  rgba(232, 115, 28, .30), transparent 70%),
+    radial-gradient(34% 30% at 92% 12%, rgba(79, 122, 48, .24),  transparent 70%),
+    radial-gradient(46% 40% at 82% 92%, rgba(232, 217, 184, .85), transparent 70%),
+    radial-gradient(34% 34% at 6% 88%,  rgba(31, 58, 43, .14),   transparent 70%);
+}
+body::after {
+  content: "";
+  position: fixed;
+  right: -18vmax;
+  top: 18vh;
+  z-index: -1;
+  width: 60vmax;
+  height: 60vmax;
+  pointer-events: none;
+  background: var(--stripes) 0 0 / 22vmax 22vmax;
+  opacity: .06;
+  transform: rotate(-14deg);
+  -webkit-mask-image: radial-gradient(closest-side, #000 30%, transparent 100%);
+          mask-image: radial-gradient(closest-side, #000 30%, transparent 100%);
+}
+body.vik-7-9::after { opacity: .035; }
+
+/* ---------------------------------------------------------------------
+   ТИГРОВІ СМУГИ В ТЕКСТІ
+   Смуги «просвічують» крізь літери (background-clip: text).
+   --------------------------------------------------------------------- */
+.logo__letter,
+.topbar__word .ch,
+h1:not(.logo),
+.section-title,
+.grade-card__num {
+  background: var(--stripes) 0 0 / 1.15em 1.15em repeat;
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+/* Легка тінь, щоб смугасті літери «відривались» від фону */
+.logo__letter,
+.grade-card__num { filter: drop-shadow(0 3px 0 rgba(28, 26, 23, .12)); }
+/* Різні «візерунки» для кожної літери великого лого */
+.logo__item:nth-child(2) .logo__letter { background-position: 37% 20%; }
+.logo__item:nth-child(3) .logo__letter { background-position: 71% 60%; }
+.logo__item:nth-child(4) .logo__letter { background-position: 15% 85%; }
+
+/* Заголовок розділу: смугастий текст + смугаста риска */
+.section-title {
+  display: inline-block;
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.section-title::after {
+  content: "";
+  display: block;
+  width: 96px;
+  height: 7px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: var(--stripes) 0 0 / 28px 28px;
+}
+
+/* У шапці: перша буква слова смугаста, решта — темно-зелені */
+.topbar__word .ch--rest {
+  background: none;
+  color: var(--jungle);
+  -webkit-text-fill-color: var(--jungle);
+}
+
+/* ---------------------------------------------------------------------
+   ШАПКА: плаваюча скляна панель
+   --------------------------------------------------------------------- */
+.topbar {
+  top: 10px;
+  margin: 10px 12px 0;
+  padding: 8px 10px 8px 18px;
+  border-radius: 22px;
+  background: rgba(250, 248, 243, .6);
+  -webkit-backdrop-filter: var(--glass-blur);
+          backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, .9);
+  color: var(--text);
+}
+@media (min-width: 1140px) {
+  .topbar { width: calc(100% - 24px); max-width: 1120px; margin-left: auto; margin-right: auto; }
+}
+.topbar__logo { font-size: 1.6rem; }
+
+.menu-btn {
+  border: 1px solid var(--glass-line);
+  background: var(--glass-strong);
+  color: var(--jungle);
+  box-shadow: 0 4px 14px -6px rgba(31, 58, 43, .35), inset 0 0 0 1px var(--glass-edge);
+  transition: background .2s, transform .15s;
+}
+.menu-btn:hover { background: #fff; }
+.menu-btn[aria-expanded="true"] {
+  background: var(--orange-glossy);
+  border-color: transparent;
+  color: var(--text);
+}
+
+/* Випадне меню — теж скло */
+.menu {
+  top: calc(100% + 8px);
+  padding: 14px;
+  border-radius: 22px;
+  background: rgba(250, 248, 243, .82);
+  -webkit-backdrop-filter: var(--glass-blur);
+          backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--shadow-lift);
+}
+.menu a {
+  background: rgba(255, 255, 255, .65);
+  color: var(--jungle);
+  box-shadow: inset 0 0 0 1px var(--glass-edge);
+  transition: background .15s, transform .15s;
+}
+.menu a:hover, .menu a.is-current {
+  background: var(--orange-glossy);
+  color: var(--text);
+  box-shadow: none;
+}
+.menu a.menu__extra {
+  background: linear-gradient(135deg, var(--leaf), var(--jungle));
+  color: #fff;
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------------------
+   КНОПКИ
+   --------------------------------------------------------------------- */
+.btn { transition: transform .15s, box-shadow .2s, background .2s, filter .2s; }
+.btn:hover { transform: translateY(-1px); }
+
+/* Помаранчева — глянцева, текст темний */
+.btn--orange,
+.btn--orange:hover {
+  background: var(--orange-glossy);
+  color: var(--text);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .55),
+    inset 0 -2px 0 rgba(0, 0, 0, .08),
+    0 10px 22px -8px rgba(232, 115, 28, .7);
+}
+.btn--orange:hover { filter: brightness(1.05) saturate(1.05); }
+
+/* Прозора — скляна */
+.btn--ghost {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(12px);
+  color: var(--jungle);
+  box-shadow: inset 0 0 0 1px rgba(31, 58, 43, .2), 0 6px 16px -8px rgba(31, 58, 43, .35);
+}
+.btn--ghost:hover { background: var(--glass-strong); }
+
+/* Фільтри-«пігулки» */
+.chip {
+  border: 1px solid rgba(31, 58, 43, .18);
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px -8px rgba(31, 58, 43, .4);
+}
+.chip:hover { background: var(--glass-strong); }
+.chip[aria-pressed="true"] {
+  background: var(--orange-glossy);
+  border-color: transparent;
+  color: var(--text);
+}
+
+/* Велика кнопка «Корисне поза програмою»: зелене скло + смуги */
+.extra-btn {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #5E8E3A 0%, var(--leaf) 40%, var(--jungle) 100%);
+  border: 1px solid rgba(255, 255, 255, .35);
+  box-shadow: var(--shadow-lift), inset 0 1px 0 rgba(255, 255, 255, .35);
+}
+.extra-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 45%;
+  background: var(--stripes) 0 0 / 70px 70px;
+  opacity: .16;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 70%);
+          mask-image: linear-gradient(90deg, transparent, #000 70%);
+  pointer-events: none;
+}
+.extra-btn:hover { transform: translateY(-3px); box-shadow: 0 26px 50px -18px rgba(31, 58, 43, .55); }
+
+/* Кнопка «Інтерактивний урок»: глянцевий помаранчевий + смуги */
+.lesson-cta {
+  position: relative;
+  overflow: hidden;
+  background: var(--orange-glossy);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 16px 30px -14px rgba(232, 115, 28, .8);
+}
+.lesson-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 40%;
+  background: var(--stripes) 0 0 / 60px 60px;
+  opacity: .22;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 75%);
+          mask-image: linear-gradient(90deg, transparent, #000 75%);
+  pointer-events: none;
+}
+.lesson-cta > * { position: relative; z-index: 1; }
+
+/* ---------------------------------------------------------------------
+   СКЛЯНІ ПАНЕЛІ Й КАРТКИ
+   (без розмиття фону — так швидше на шкільних комп'ютерах;
+    фон і так м'який)
+   --------------------------------------------------------------------- */
+.block,
+.topic-card,
+.tiger__bubble,
+.empty,
+.lesson-item {
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, .9);
+}
+.block { border-radius: calc(var(--radius) + 6px); }
+.empty { border-style: solid; }
+.lesson-item--ex { background: rgba(242, 233, 214, .55); border-style: solid; }
+.lesson-item.is-done { border-color: rgba(79, 122, 48, .6); box-shadow: var(--shadow-soft), inset 0 0 0 2px rgba(79, 122, 48, .35); }
+.lesson-inline__status {
+  top: 76px;                      /* під плаваючою шапкою */
+  background: rgba(255, 255, 255, .7);
+  -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(12px);
+  box-shadow: 0 8px 20px -14px rgba(31, 58, 43, .5);
+}
+.lesson-inline { scroll-margin-top: 90px; }
+
+/* Картки тем */
+.topic-card { transition: transform .2s, box-shadow .2s, background .2s; }
+.topic-card:hover {
+  transform: translateY(-4px);
+  background: var(--glass-strong);
+  box-shadow: var(--shadow-lift);
+}
+.topic-card.is-done { box-shadow: var(--shadow-soft), inset 0 0 0 2px var(--leaf); }
+.topic-card__icon {
+  background: linear-gradient(145deg, #fff, var(--savanna-lt));
+  box-shadow: inset 0 0 0 1px var(--glass-edge), 0 6px 14px -8px rgba(31, 58, 43, .4);
+}
+.topic-card__num { background: rgba(232, 217, 184, .7); }
+.topic-head__icon {
+  background: linear-gradient(145deg, #fff, var(--savanna));
+  box-shadow: inset 0 0 0 1px var(--glass-edge), 0 10px 20px -10px rgba(31, 58, 43, .45);
+}
+body.vik-7-9 .topic-card { background: var(--glass); border: 1px solid var(--glass-line); }
+
+/* Картки класів на головній */
+.grade-card {
+  overflow: hidden;
+  background: linear-gradient(160deg, rgba(255, 255, 255, .85), rgba(242, 233, 214, .65));
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--shadow-soft), inset 0 1px 0 #fff;
+}
+.grade-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lift); }
+.grade-card__label { color: var(--jungle); }
+.grade-card__progress {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .7);
+}
+/* 2–4 клас — теплий помаранчевий відтінок */
+.grade-card--young {
+  background: linear-gradient(160deg, rgba(255, 236, 218, .95), rgba(246, 152, 79, .55));
+}
+.grade-card--young .grade-card__progress { color: var(--text); }
+/* 7–9 клас — темне скло «джунглі» */
+.grade-card--older {
+  background: linear-gradient(160deg, rgba(47, 82, 61, .92), rgba(31, 58, 43, .96));
+  border-color: rgba(255, 255, 255, .25);
+}
+.grade-card--older .grade-card__label { color: var(--bg); }
+.grade-card--older .grade-card__progress { background: rgba(255, 255, 255, .15); color: var(--savanna); }
+
+/* Бульбашка Тайгера */
+.tiger__bubble {
+  border-radius: 22px 22px 22px 6px;
+  background: var(--glass-strong);
+}
+
+/* Хлібні крихти — скляна «пігулка» */
+.crumbs {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--glass);
+  box-shadow: inset 0 0 0 1px var(--glass-line);
+}
+
+/* Елементи вправ і тесту */
+.option,
+.pair-btn,
+.chip-item,
+.order-item,
+.step {
+  background: rgba(255, 255, 255, .72);
+  border-color: rgba(31, 58, 43, .12);
+  box-shadow: 0 4px 12px -8px rgba(31, 58, 43, .35);
+}
+.step { border: 1px solid rgba(31, 58, 43, .1); }
+.sort-pool { background: rgba(242, 233, 214, .55); }
+.sort-group { background: rgba(255, 255, 255, .45); }
+.flip { background: linear-gradient(160deg, #fff, var(--savanna)); box-shadow: var(--shadow-soft); }
+.flip[aria-pressed="true"] { background: linear-gradient(160deg, #2F523D, var(--jungle)); }
+.blank-input { background: rgba(255, 255, 255, .8); }
+
+/* ---------------------------------------------------------------------
+   ПІДВАЛ: темні «джунглі» зі смугастою кромкою
+   --------------------------------------------------------------------- */
+.footer {
+  position: relative;
+  margin-top: 24px;
+  background: linear-gradient(180deg, #24443A, var(--jungle));
+}
+.footer::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -6px;
+  height: 6px;
+  background: var(--stripes) 0 0 / 24px 24px;
+}
+
+/* ---------------------------------------------------------------------
+   ЗАПАСНІ ВАРІАНТИ
+   --------------------------------------------------------------------- */
+/* Браузер не вміє розмивати фон — робимо панелі майже непрозорими */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .topbar, .menu { background: rgba(250, 248, 243, .96); }
+}
+/* Людина просить менше прозорості — без скла */
+@media (prefers-reduced-transparency: reduce) {
+  .topbar, .menu, .block, .topic-card, .tiger__bubble, .lesson-item,
+  .btn--ghost, .chip, .crumbs, .grade-card:not(.grade-card--older) {
+    background: #fff;
+    -webkit-backdrop-filter: none;
+            backdrop-filter: none;
+  }
+  body::after { display: none; }
+}
+
+@media (max-width: 520px) {
+  .topbar { margin: 8px 8px 0; top: 8px; padding-left: 14px; }
+  .crumbs { border-radius: 16px; }
+}
