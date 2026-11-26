@@ -576,49 +576,6 @@ body.vik-2-4 .option { padding: 14px 24px; font-size: 1.1rem; }
    ІНТЕРАКТИВНИЙ УРОК
    ===================================================================== */
 
-/* Кнопка «Інтерактивний урок» на сторінці теми */
-.lesson-cta {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-  margin: 18px 0 4px;
-  padding: 16px 20px;
-  border: 0;
-  border-radius: var(--radius);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  background: var(--orange);
-  color: var(--text);
-  text-decoration: none;
-  box-shadow: 0 5px 0 var(--orange-dark);
-  transition: transform .15s;
-}
-.lesson-cta:hover { transform: translateY(-2px); }
-.lesson-cta__play {
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--jungle);
-  color: var(--orange);
-  font-size: 1.4rem;
-}
-.lesson-cta__text { display: flex; flex-direction: column; flex: 1; }
-.lesson-cta__text b { font: 700 1.15rem var(--font-head); }
-.lesson-cta__text small { font-weight: 700; }
-.lesson-cta__done {
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: var(--jungle);
-  color: var(--bg);
-  font-weight: 800;
-  font-size: .85rem;
-}
-
 /* Блок «Інтерактивний урок» на сторінці теми */
 .lesson-inline { scroll-margin-top: 70px; }   /* щоб шапка не закривала заголовок */
 .lesson-inline__status {
@@ -999,7 +956,6 @@ body.vik-2-4 .topic-card__icon { width: 68px; height: 68px; font-size: 2.4rem; }
 body.vik-2-4 .topic-card__icon .ico { width: 40px; height: 40px; }
 body.vik-7-9 .topic-card__icon { background: var(--savanna-lt); }
 
-.lesson-cta__play .ico { width: 26px; height: 26px; }
 .slide__icon .ico { width: 56px; height: 56px; }
 .extra-btn .ico { width: 1.6em; height: 1.6em; }
 .game__tiger { width: 90%; height: 90%; }

@@ -231,37 +231,88 @@ h1:not(.logo),
 }
 .extra-btn:hover { transform: translateY(-3px); box-shadow: 0 26px 50px -18px rgba(31, 58, 43, .55); }
 
-/* Кнопка «Інтерактивний урок»: глянцевий помаранчевий + смуги */
-.lesson-cta {
+/* Переходи між розділами теми: Пояснення · Вправи · Практика · … */
+/* Панель прикріплена під шапкою: під час прокручування завжди видно,
+   тож легко повернутися до пояснення чи попередніх вправ */
+.topic-nav {
+  position: sticky;
+  top: 78px;                       /* одразу під плаваючою шапкою */
+  z-index: 6;
+  display: flex;
+  gap: 8px;
+  margin: 14px -8px 20px;
+  padding: 7px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-line);
+  background: rgba(250, 248, 243, .72);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+          backdrop-filter: blur(14px) saturate(150%);
+  box-shadow: 0 10px 24px -16px rgba(31, 58, 43, .5);
+  /* Якщо кнопки не вміщаються — гортаємо їх убік, а не в кілька рядків */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-nav__btn { flex: 0 0 auto; white-space: nowrap; }
+/* Кнопка розділу, який зараз на екрані */
+.topic-nav__btn.is-current:not([data-to="urok"]) { background: var(--jungle); color: #fff; border-color: var(--jungle); }
+.topic-nav__btn.is-current:not([data-to="urok"]) .ico { filter: brightness(0) invert(1); }
+.topic-nav__btn[data-to="urok"].is-current { outline: 3px solid var(--jungle); outline-offset: -3px; }
+/* Шкала виконання вправ липне вже під панеллю розділів */
+.topic-nav ~ .lesson-inline .lesson-inline__status { top: 142px; }
+.topic-nav__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid var(--glass-line);
+  border-radius: 999px;
+  background: var(--glass-strong);
+  color: var(--jungle);
+  font: 700 .95rem var(--font-body);
+  cursor: pointer;
+  box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, .9);
+  transition: transform .15s, background .15s, box-shadow .15s;
+}
+.topic-nav__btn .ico { width: 20px; height: 20px; }
+.topic-nav__btn:hover { transform: translateY(-2px); background: #fff; }
+.topic-nav__btn:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+/* Кнопка «Вправи» — головна: помаранчева зі смугами */
+.topic-nav__btn[data-to="urok"] {
   position: relative;
   overflow: hidden;
+  border-color: rgba(216, 101, 15, .6);
   background: var(--orange-glossy);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 16px 30px -14px rgba(232, 115, 28, .8);
+  color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 12px 24px -12px rgba(232, 115, 28, .8);
 }
-.lesson-cta::after {
+.topic-nav__btn[data-to="urok"]::after {
   content: "";
   position: absolute;
   inset: 0 0 0 auto;
-  width: 40%;
-  background: var(--stripes) 0 0 / 60px 60px;
+  width: 55%;
+  background: var(--stripes) 0 0 / 40px 40px;
   opacity: .22;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 75%);
-          mask-image: linear-gradient(90deg, transparent, #000 75%);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 80%);
+          mask-image: linear-gradient(90deg, transparent, #000 80%);
   pointer-events: none;
 }
-.lesson-cta > * { position: relative; z-index: 1; }
-.lesson-cta__done { flex: 0 0 auto; white-space: nowrap; }
-/* На телефоні значок «пройдено ✓» — маленька наліпка в куті кнопки */
+.topic-nav__btn[data-to="urok"] > * { position: relative; z-index: 1; }
+.topic-nav__count {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .85);
+  font-size: .8rem;
+}
+/* Розділи, до яких ведуть кнопки, не ховаються під шапкою */
+#roz-poyasnennia, #roz-kroky, #roz-pytannia, #urok { scroll-margin-top: 150px; }
+#roz-praktyka { scroll-margin-top: 220px; }   /* ще й під липкою шкалою виконання */
 @media (max-width: 520px) {
-  .lesson-cta { padding-right: 16px; }
-  .lesson-cta > .lesson-cta__done {
-    position: absolute;
-    top: 8px;
-    right: 10px;
-    padding: 2px 10px;
-    font-size: .75rem;
-  }
-  .lesson-cta { padding-top: 34px; }
+  .topic-nav { top: 74px; margin-left: -4px; margin-right: -4px; padding: 5px; gap: 6px; }
+  .topic-nav__btn { padding: 8px 13px; font-size: .86rem; }
+  .topic-nav ~ .lesson-inline .lesson-inline__status { top: 130px; }
+  #roz-poyasnennia, #roz-kroky, #roz-pytannia, #urok { scroll-margin-top: 140px; }
+  #roz-praktyka { scroll-margin-top: 210px; }
 }
 
 /* ---------------------------------------------------------------------
@@ -288,6 +339,22 @@ h1:not(.logo),
   box-shadow: 0 8px 20px -14px rgba(31, 58, 43, .5);
 }
 .lesson-inline { scroll-margin-top: 90px; }
+
+/* Шкала виконання вправ: помаранчева з тигровими смугами */
+.lesson__bar {
+  height: 14px;
+  background: rgba(232, 217, 184, .7);
+  box-shadow: inset 0 1px 3px rgba(31, 58, 43, .25);
+}
+.lesson__bar-fill {
+  border-radius: 999px;
+  /* смуги вже помаранчеві (img/tiger-stripes.svg) + глянцевий відблиск зверху */
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .35), transparent 60%),
+    var(--stripes) 0 0 / 28px 28px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45);
+  transition: width .4s cubic-bezier(.3, 1.4, .5, 1);
+}
 
 /* Картки тем */
 .topic-card { transition: transform .2s, box-shadow .2s, background .2s; }

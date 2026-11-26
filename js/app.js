@@ -398,18 +398,21 @@
       '<div><div class="topic-head__meta">Тема ' + esc(тема.номер) + "</div><h1>" + esc(тема.назва) + "</h1></div></div>" +
       "<p>" + esc(тема.опис) + "</p>";
 
-    // Кнопка, що прокручує до інтерактивного уроку на цій сторінці
+    // Переходи між розділами сторінки (кнопки прокручують до потрібного блоку)
+    const розділи = [["roz-poyasnennia", "book", "Пояснення"]];
     if (урок) {
-      const вправ = урок.filter(function (с) { return ВПРАВИ.indexOf(с.тип) !== -1; }).length;
-      html += '<button type="button" class="lesson-cta" data-to-urok>' +
-        '<span class="lesson-cta__play">' + значок("img/icons/ui-play-orange.svg") + "</span>" +
-        '<span class="lesson-cta__text"><b>Інтерактивний урок</b><small>' + вправ + " " +
-        множина(вправ, "вправа", "вправи", "вправ") + " — нижче на цій сторінці ↓</small></span>" +
-        (пройдено("u-" + ключ) ? '<span class="lesson-cta__done">пройдено ✓</span>' : "") + "</button>";
+      розділи.push(["urok", "puzzle", "Вправи"]);
+      if (урок.some(function (с) { return с.тип === "практика"; })) розділи.push(["roz-praktyka", "steps", "Практика"]);
     }
+    if (кроки.length) розділи.push(["roz-kroky", "steps", "Покрокове завдання"]);
+    if (питання.length) розділи.push(["roz-pytannia", "quiz", "Перевір себе"]);
+    html += '<nav class="topic-nav" aria-label="Розділи теми">' + розділи.map(function (р) {
+      return '<button type="button" class="topic-nav__btn" data-to="' + р[0] + '">' + ui(р[1]) + " " + р[2] +
+        (р[0] === "urok" ? ' <span class="topic-nav__count" id="navCount"></span>' : "") + "</button>";
+    }).join("") + "</nav>";
 
     // 1. Пояснення
-    html += '<section class="block"><h2>' + ui("book") + ' Пояснення</h2>' +
+    html += '<section class="block" id="roz-poyasnennia"><h2>' + ui("book") + ' Пояснення</h2>' +
       абзаци.map(function (а) { return "<p>" + а + "</p>"; }).join("") + "</section>";
 
     // 2. Інтерактивний урок (вправи прямо на сторінці)
@@ -417,7 +420,7 @@
 
     // 3. Покрокове завдання
     if (кроки.length) {
-      html += '<section class="block"><h2>' + ui("steps") + ' Покрокове завдання</h2>' +
+      html += '<section class="block" id="roz-kroky"><h2>' + ui("steps") + ' Покрокове завдання</h2>' +
         '<p class="steps-hint">Натискай на крок, коли виконаєш його.</p><ol class="steps">';
       кроки.forEach(function (к, і) {
         html += '<li><button type="button" class="step" aria-pressed="false">' +
@@ -430,7 +433,7 @@
 
     // 4. Перевір себе
     if (питання.length) {
-      html += '<section class="block"><h2>' + ui("quiz") + ' Перевір себе</h2>';
+      html += '<section class="block" id="roz-pytannia"><h2>' + ui("quiz") + ' Перевір себе</h2>';
       питання.forEach(function (п, і) {
         html += '<div class="question" data-q="' + і + '"><p class="question__text">' + (і + 1) + ". " + п.текст + "</p>" +
           '<div class="options">';
@@ -448,12 +451,45 @@
     app.innerHTML = html;
 
     // --- Інтерактивний урок ---
-    if (урок) {
-      запуститиУрок(урок, ключ);
-      app.querySelector("[data-to-urok]").addEventListener("click", function () {
-        document.getElementById("urok").scrollIntoView({ behavior: "smooth", block: "start" });
+    if (урок) запуститиУрок(урок, ключ);
+
+    // --- Переходи між розділами (панель прикріплена вгорі екрана) ---
+    const кнопкиРозділів = Array.prototype.slice.call(app.querySelectorAll(".topic-nav__btn"));
+    кнопкиРозділів.forEach(function (к) {
+      к.addEventListener("click", function () {
+        const ціль = document.getElementById(к.dataset.to);
+        if (ціль) ціль.scrollIntoView({ behavior: "smooth", block: "start" });
       });
+    });
+
+    // Підсвічуємо кнопку розділу, який зараз на екрані
+    function поточнийРозділ() {
+      let поточна = кнопкиРозділів[0];
+      кнопкиРозділів.forEach(function (к) {
+        const ціль = document.getElementById(к.dataset.to);
+        if (ціль && ціль.getBoundingClientRect().top < 240) поточна = к;
+      });
+      кнопкиРозділів.forEach(function (к) {
+        const так = к === поточна;
+        к.classList.toggle("is-current", так);
+        if (так) к.setAttribute("aria-current", "true"); else к.removeAttribute("aria-current");
+      });
+      // На вузькому екрані прокручуємо панель, щоб активна кнопка була видна
+      const панель = поточна && поточна.parentNode;
+      if (панель && панель.scrollWidth > панель.clientWidth) {
+        const ліво = поточна.offsetLeft - панель.clientWidth / 2 + поточна.offsetWidth / 2;
+        if (Math.abs(панель.scrollLeft - ліво) > 4) панель.scrollLeft = ліво;
+      }
     }
+    let чекає = false;
+    function приПрокручуванні() {
+      if (чекає) return;
+      чекає = true;
+      requestAnimationFrame(function () { чекає = false; поточнийРозділ(); });
+    }
+    window.addEventListener("scroll", приПрокручуванні, { passive: true });
+    доПрибирання.push(function () { window.removeEventListener("scroll", приПрокручуванні); });
+    поточнийРозділ();
 
     // --- Кроки: відмітка виконаного ---
     app.querySelectorAll(".steps:not(.practice__steps) .step").forEach(function (к) {
@@ -1140,13 +1176,16 @@
      Усі пояснення й вправи уроку йдуть одна за одною (без слайдів).
      Коли всі вправи виконано — урок позначається пройденим. */
   function урокНаСторінці(слайди, ключ) {
+    let першаПрактика = true;
     const html = слайди.map(function (с, і) {
       const вправа = ВПРАВИ.indexOf(с.тип) !== -1;
-      return '<div class="lesson-item' + (вправа ? " lesson-item--ex" : "") + (с.тип === "практика" ? " lesson-item--practice" : "") + '" data-i="' + і + '"><div class="slide"></div></div>';
+      // Перша практика отримує id — до неї веде кнопка «Практика» вгорі сторінки
+      const id = с.тип === "практика" && першаПрактика ? ' id="roz-praktyka"' : "";
+      if (id) першаПрактика = false;
+      return '<div class="lesson-item' + (вправа ? " lesson-item--ex" : "") + (с.тип === "практика" ? " lesson-item--practice" : "") + '"' + id + ' data-i="' + і + '"><div class="slide"></div></div>';
     }).join("");
     const вправ = слайди.filter(function (с) { return ВПРАВИ.indexOf(с.тип) !== -1; }).length;
-    return '<section class="block lesson-inline" id="urok">' +
-      "<h2>" + ui("puzzle") + " Інтерактивний урок</h2>" +
+    return '<section class="block lesson-inline" id="urok" aria-label="Вправи">' +
       '<div class="lesson-inline__status"><div class="lesson__bar" aria-hidden="true"><div class="lesson__bar-fill"></div></div>' +
       '<p class="lesson-inline__count" aria-live="polite">Виконано вправ: <b>0 з ' + вправ + "</b></p></div>" +
       html + '<div class="lesson-inline__done"></div></section>';
@@ -1166,6 +1205,11 @@
       лічильник.innerHTML = "Виконано вправ: <b>" + виконані.size + " з " + вправ + "</b>" +
         (пройдено(ключУроку) && виконані.size < вправ ? " · раніше урок уже пройдено ✓" : "");
       смуга.style.width = (вправ ? виконані.size / вправ * 100 : 100) + "%";
+      // Лічильник на кнопці «Вправи» вгорі сторінки
+      const наКнопці = document.getElementById("navCount");
+      // (✓ — якщо всі виконано зараз або урок уже пройдено раніше)
+      if (наКнопці) наКнопці.textContent = виконані.size === вправ || пройдено(ключУроку)
+        ? "✓" : виконані.size + "/" + вправ;
       if (вправ && виконані.size === вправ) {
         позначити(ключУроку, true);
         фінал.innerHTML = тайгер("Усі вправи уроку виконано! Тепер пройди «Перевір себе» внизу сторінки.", "happy");
