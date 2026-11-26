@@ -425,18 +425,38 @@
       '<div><div class="topic-head__meta">Тема ' + esc(тема.номер) + "</div><h1>" + esc(тема.назва) + "</h1></div></div>" +
       "<p>" + esc(тема.опис) + "</p>";
 
+    // Тема на два уроки (поле «практична»): урок 1 — вивчаємо, урок 2 — практична робота
+    const практична = тема.практична || null;
+    const назваКроків = практична ? "Завдання для вивчення" : "Покрокове завдання";
+
     // Переходи між розділами сторінки (кнопки прокручують до потрібного блоку)
     const розділи = [["roz-poyasnennia", "book", "Пояснення"]];
     if (урок) {
       розділи.push(["urok", "puzzle", "Вправи"]);
       if (урок.some(function (с) { return с.тип === "практика"; })) розділи.push(["roz-praktyka", "steps", "Практика"]);
     }
-    if (кроки.length) розділи.push(["roz-kroky", "steps", "Покрокове завдання"]);
+    if (кроки.length) розділи.push(["roz-kroky", "steps", назваКроків]);
     if (питання.length) розділи.push(["roz-pytannia", "quiz", "Перевір себе"]);
+    if (практична) розділи.push(["roz-praktychna", "star", "Практична робота"]);
     html += '<nav class="topic-nav" aria-label="Розділи теми">' + розділи.map(function (р) {
       return '<button type="button" class="topic-nav__btn" data-to="' + р[0] + '">' + ui(р[1]) + " " + р[2] +
         (р[0] === "urok" ? ' <span class="topic-nav__count" id="navCount"></span>' : "") + "</button>";
     }).join("") + "</nav>";
+
+    // Список кроків, які можна відмічати натисканням
+    function списокКроків(список) {
+      return '<p class="steps-hint">Натискай на крок, коли виконаєш його.</p><ol class="steps">' +
+        список.map(function (к, і) {
+          return '<li><button type="button" class="step" aria-pressed="false">' +
+            '<span class="step__num">' + (і + 1) + '</span><span class="step__text">' + к + "</span></button></li>";
+        }).join("") + "</ol>";
+    }
+    // Позначка початку уроку (лише для тем на два уроки)
+    function мітка(номер, текст) {
+      return практична ? '<div class="lesson-mark"><span class="lesson-mark__num">Урок ' + номер + "</span> " + текст + "</div>" : "";
+    }
+
+    html += мітка(1, "Вивчаємо тему");
 
     // 1. Пояснення
     html += '<section class="block" id="roz-poyasnennia"><h2>' + ui("book") + ' Пояснення</h2>' +
@@ -445,15 +465,10 @@
     // 2. Інтерактивний урок (вправи прямо на сторінці)
     if (урок) html += урокНаСторінці(урок, ключ);
 
-    // 3. Покрокове завдання
+    // 3. Покрокове завдання (у темах на два уроки — «Завдання для вивчення»)
     if (кроки.length) {
-      html += '<section class="block" id="roz-kroky"><h2>' + ui("steps") + ' Покрокове завдання</h2>' +
-        '<p class="steps-hint">Натискай на крок, коли виконаєш його.</p><ol class="steps">';
-      кроки.forEach(function (к, і) {
-        html += '<li><button type="button" class="step" aria-pressed="false">' +
-          '<span class="step__num">' + (і + 1) + '</span><span class="step__text">' + к + "</span></button></li>";
-      });
-      html += "</ol></section>";
+      html += '<section class="block" id="roz-kroky"><h2>' + ui("steps") + " " + назваКроків + "</h2>" +
+        списокКроків(кроки) + "</section>";
     }
 
     if (тема.підказка) html += тайгер(тема.підказка);
@@ -469,6 +484,20 @@
         });
         html += '</div><p class="feedback" aria-live="polite"></p></div>';
       });
+      html += "</section>";
+    }
+
+    // 5. Урок 2 — практична робота за комп'ютером
+    if (практична) {
+      html += мітка(2, "Практична робота");
+      html += '<section class="block practical" id="roz-praktychna"><h2>' + ui("star") + " Практична робота</h2>" +
+        (практична.мета ? '<p class="practical__goal"><b>Мета:</b> ' + практична.мета + "</p>" : "") +
+        списокКроків(практична.кроки || []);
+      if (практична.ускладнення && практична.ускладнення.length) {
+        html += '<div class="practical__extra"><h3>Ускладнення — для тих, хто впорався швидше</h3><ul>' +
+          практична.ускладнення.map(function (у) { return "<li>" + у + "</li>"; }).join("") + "</ul></div>";
+      }
+      if (практична.результат) html += '<p class="practical__result"><b>Що має вийти:</b> ' + практична.результат + "</p>";
       html += "</section>";
     }
 
