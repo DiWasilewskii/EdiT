@@ -29,9 +29,11 @@
 <path id="Vector_20" d="M349 347C355 350 357 356 352 361L342 372C335 374 332 369 336 364C325 367 320 359 326 351L332 345" fill="#FAF8F3" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke="#1C1A17"/>
 </g>
 <g id="tip-paw">
-<path id="Vector_21" d="M121 226L111 210C105 200 108 190 112 183L109 145C108 134 113 129 120 130C127 130 130 137 130 146L132 175C138 168 146 172 148 179C156 176 164 183 162 191C174 191 175 203 167 215L141 229L121 226Z" fill="#E8731C" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke="#1C1A17"/>
-<path id="Vector_22" d="M110 151L109 145C108 134 113 129 120 130C127 130 130 137 130 146V151H110Z" fill="#FAF8F3" stroke-width="6" stroke-linejoin="round" stroke="#1C1A17"/>
-<path id="Vector_23" d="M132 177V194C143 186 153 194 149 202L137 212M149 180L147 187M162 192L158 202" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke="#1C1A17"/>
+<!-- Виправлена лапа: кулак, піднятий лише вказівний палець -->
+<path id="finger" d="M110 186L109 142C109 133 114 128 120 128C126 128 131 133 131 142L132 186Z" fill="#E8731C" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke="#1C1A17"/>
+<path id="finger-tip" d="M109.5 150L109 142C109 133 114 128 120 128C126 128 131 133 131 142L131 150Z" fill="#FAF8F3" stroke-width="6" stroke-linejoin="round" stroke="#1C1A17"/>
+<rect id="fist" x="104" y="176" width="58" height="52" rx="20" fill="#E8731C" stroke-width="7" stroke-linejoin="round" stroke="#1C1A17"/>
+<path id="fist-lines" d="M136 184C145 182 153 185 156 192M136 198C145 196 153 199 156 206M109 206C119 200 131 202 135 214" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke="#1C1A17"/>
 </g>
 <g id="ears">
 <path id="Vector_24" d="M190 116C167 111 157 90 170 74C185 58 211 73 216 92L190 116Z" fill="#E8731C" stroke-width="7" stroke="#1C1A17"/>
