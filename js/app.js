@@ -31,6 +31,75 @@
   const menu = document.getElementById("mainMenu");
   const menuBtn = document.getElementById("menuBtn");
 
+  /* =================================================================
+     АНІМОВАНИЙ ЛОГОТИП У ШАПЦІ
+     Слова по колу, буква за буквою: EdiT → Education → Digital → Innovation → Technology → EdiT …
+     Щоб змінити слова чи швидкість — правте значення нижче.
+     ================================================================= */
+  const СЛОВА_ЛОГО = ["EdiT", "Education", "Digital", "Innovation", "Technology"];
+  const ПАУЗА_EDIT = 2600;   // скільки мс показується «EdiT»
+  const ПАУЗА_СЛОВА = 1500;  // скільки мс показується кожне інше слово
+  const ШВИДКІСТЬ_ДРУКУ = 90;  // мс між появою букв
+  const ШВИДКІСТЬ_СТИРАННЯ = 55; // мс між зникненням букв
+
+  (function анімуватиЛого() {
+    const лого = document.getElementById("headerLogo");
+    if (!лого) return;
+    // Якщо людина вимкнула анімацію в системі — лишаємо просто «EdiT»
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let номерСлова = 0;
+
+    function надрукувати(слово, далі) {
+      лого.textContent = "";
+      let і = 0;
+      (function крок() {
+        if (і >= слово.length) return далі();
+        const буква = document.createElement("span");
+        // У словах-розшифруваннях перша буква помаранчева, решта світліші
+        буква.className = "ch" + (номерСлова > 0 && і > 0 ? " ch--rest" : "");
+        буква.textContent = слово[і];
+        лого.appendChild(буква);
+        і++;
+        setTimeout(крок, ШВИДКІСТЬ_ДРУКУ);
+      })();
+    }
+
+    function стерти(далі) {
+      const букви = Array.prototype.slice.call(лого.children);
+      (function крок() {
+        const остання = букви.pop();
+        if (!остання) return далі();
+        остання.classList.add("ch--out");
+        setTimeout(function () { остання.remove(); крок(); }, ШВИДКІСТЬ_СТИРАННЯ);
+      })();
+    }
+
+    function цикл() {
+      надрукувати(СЛОВА_ЛОГО[номерСлова], function () {
+        setTimeout(function () {
+          стерти(function () {
+            номерСлова = (номерСлова + 1) % СЛОВА_ЛОГО.length;
+            цикл();
+          });
+        }, номерСлова === 0 ? ПАУЗА_EDIT : ПАУЗА_СЛОВА);
+      });
+    }
+
+    // Спочатку показуємо готове «EdiT», а потім запускаємо зміну слів
+    setTimeout(function () {
+      стерти(function () { номерСлова = 1; цикл(); });
+    }, ПАУЗА_EDIT);
+    // Перетворюємо початковий текст на букви-спани, щоб їх можна було стерти по одній
+    лого.innerHTML = "";
+    СЛОВА_ЛОГО[0].split("").forEach(function (б) {
+      const s = document.createElement("span");
+      s.className = "ch";
+      s.textContent = б;
+      лого.appendChild(s);
+    });
+  })();
+
   /* ---------- Перевірка, що файл з темами завантажився ---------- */
   if (typeof ТЕМИ_КЛАСІВ === "undefined" || typeof ТЕМИ_ПОЗА_ПРОГРАМОЮ === "undefined" || typeof КАТЕГОРІЇ === "undefined") {
     app.innerHTML =
@@ -187,10 +256,10 @@
   /* ---------- Головна ---------- */
   function сторінкаГоловна() {
     встановитиВік(null);
-    const слова = [["E", "Енергія"], ["d", "Досвід"], ["i", "Ідеї"], ["T", "Технології"]];
+    const слова = [["E", "Education"], ["d", "Digital"], ["i", "Innovation"], ["T", "Technology"]];
 
     let html = '<section class="hero">' +
-      '<h1 class="logo" aria-label="EdiT: Енергія, Досвід, Ідеї, Технології">';
+      '<h1 class="logo" aria-label="EdiT: Education, Digital, Innovation, Technology" lang="en">';
     слова.forEach(function (с) {
       html += '<span class="logo__item" aria-hidden="true"><span class="logo__letter">' + с[0] +
         '</span><span class="logo__word">' + с[1] + "</span></span>";

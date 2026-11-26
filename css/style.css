@@ -128,6 +128,26 @@ main {
   color: var(--orange);
   text-decoration: none;
 }
+/* Анімований логотип у шапці: кожна буква — окремий <span> */
+.topbar__word {
+  display: inline-flex;
+  min-height: 1.3em;
+  white-space: nowrap;
+}
+.topbar__word .ch {
+  display: inline-block;
+  animation: letter-pop .35s cubic-bezier(.28,1.6,.5,1) both;
+}
+.topbar__word .ch--rest { color: var(--savanna); }   /* решта букв слова — світліші */
+.topbar__word .ch--out  { animation: letter-out .12s ease-in both; }
+@keyframes letter-pop {
+  0%   { transform: translateY(-60%) scale(.4); opacity: 0; }
+  100% { transform: none; opacity: 1; }
+}
+@keyframes letter-out {
+  to { transform: translateY(40%) scale(.5); opacity: 0; }
+}
+
 .menu-btn {
   font: 700 1rem var(--font-body);
   padding: 8px 16px;

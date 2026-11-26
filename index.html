@@ -17,7 +17,10 @@
 
   <!-- ===== Шапка з меню ===== -->
   <header class="topbar">
-    <a href="#/" class="topbar__logo" aria-label="EdiT — на головну">EdiT</a>
+    <!-- Логотип у шапці: app.js по буквах змінює EdiT → Education → Digital → Innovation → Technology -->
+    <a href="#/" class="topbar__logo" aria-label="EdiT — на головну">
+      <span class="topbar__word" id="headerLogo" aria-hidden="true">EdiT</span>
+    </a>
 
     <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mainMenu">
       <span aria-hidden="true">☰</span> Меню
@@ -31,7 +34,7 @@
   <main id="app" tabindex="-1"></main>
 
   <footer class="footer">
-    EdiT · Енергія • Досвід • Ідеї • Технології
+    EdiT · Education • Digital • Innovation • Technology
   </footer>
 
   <!-- Спочатку дані тем, потім логіка сайту -->
