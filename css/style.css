@@ -444,6 +444,13 @@ body.vik-2-4 .topic-card__desc { font-size: 1rem; }
 body.vik-2-4 .topic-card__icon { font-size: 3em; }
 body.vik-7-9 .topic-card { background: #fff; border: 1px solid var(--savanna); }
 
+/* Заголовок розділу на сторінці класу */
+.section-title {
+  margin: 32px 0 0;
+  padding-bottom: 6px;
+  border-bottom: 3px solid var(--orange);
+}
+
 /* Порожній стан */
 .empty {
   text-align: center;
