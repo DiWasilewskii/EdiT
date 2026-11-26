@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EdiT — ІКТ для дітей</title>
+  <meta name="description" content="EdiT — навчальна платформа з інформатики для учнів 2–9 класів.">
+
+  <!-- Шрифти з кирилицею: Unbounded (заголовки) і Nunito (текст) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== Шапка з меню ===== -->
+  <header class="topbar">
+    <a href="#/" class="topbar__logo" aria-label="EdiT — на головну">EdiT</a>
+
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mainMenu">
+      <span aria-hidden="true">☰</span> Меню
+    </button>
+
+    <!-- Меню з класами: наповнюється з app.js -->
+    <nav class="menu" id="mainMenu" aria-label="Класи"></nav>
+  </header>
+
+  <!-- ===== Сюди app.js малює потрібну сторінку ===== -->
+  <main id="app" tabindex="-1"></main>
+
+  <footer class="footer">
+    EdiT · Енергія • Досвід • Ідеї • Технології
+  </footer>
+
+  <!-- Спочатку дані тем, потім логіка сайту -->
+  <script src="js/topics.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
