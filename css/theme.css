@@ -64,15 +64,18 @@ body.vik-7-9::after { opacity: .035; }
    --------------------------------------------------------------------- */
 .logo__letter,
 .topbar__word .ch,
-h1:not(.logo),
-.section-title,
-.grade-card__num {
+.grade-card__num,
+h1:not(.logo)::first-letter,
+.section-title::first-letter {
   background: var(--stripes) 0 0 / 1.15em 1.15em repeat;
   -webkit-background-clip: text;
           background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
 }
+/* У заголовках смугаста лише перша буква — решту тексту легко читати */
+h1:not(.logo),
+.section-title { color: var(--jungle); }
 /* Легка тінь, щоб смугасті літери «відривались» від фону */
 .logo__letter,
 .grade-card__num { filter: drop-shadow(0 3px 0 rgba(28, 26, 23, .12)); }
@@ -279,8 +282,6 @@ h1:not(.logo),
 }
 .block { border-radius: calc(var(--radius) + 6px); }
 .empty { border-style: solid; }
-.lesson-item--ex { background: rgba(242, 233, 214, .55); border-style: solid; }
-.lesson-item.is-done { border-color: rgba(79, 122, 48, .6); box-shadow: var(--shadow-soft), inset 0 0 0 2px rgba(79, 122, 48, .35); }
 .lesson-inline__status {
   top: 76px;                      /* під плаваючою шапкою */
   background: rgba(255, 255, 255, .7);
@@ -350,22 +351,118 @@ body.vik-7-9 .topic-card { background: var(--glass); border: 1px solid var(--gla
   box-shadow: inset 0 0 0 1px var(--glass-line);
 }
 
-/* Елементи вправ і тесту */
+/* ---------------------------------------------------------------------
+   ВПРАВИ: більше контрасту, щоб легше зосередитись
+   --------------------------------------------------------------------- */
+
+/* Картка вправи — суцільна біла, з помаранчевою рамкою
+   і смугастою «закладкою» ліворуч */
+.lesson-item--ex {
+  position: relative;
+  padding-left: 26px;
+  background: #fff;
+  border: 2px solid rgba(232, 115, 28, .55);
+  box-shadow: 0 18px 34px -20px rgba(232, 115, 28, .75), 0 2px 0 rgba(232, 115, 28, .25);
+}
+.lesson-item--ex::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 18px;
+  bottom: 18px;
+  width: 8px;
+  border-radius: 0 8px 8px 0;
+  background: var(--stripes) 0 0 / 20px 20px;
+}
+/* Мітка «Вправа 2 з 5» — помаранчева «пігулка» */
+.lesson-item--ex .slide__kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 4px 12px 4px 8px;
+  border-radius: 999px;
+  background: var(--orange-glossy);
+  color: var(--text);
+  box-shadow: 0 4px 10px -6px rgba(232, 115, 28, .9);
+}
+.lesson-item--ex .slide__hint {
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #F1F6EA;
+  color: var(--jungle);
+}
+/* Виконана вправа — зелена */
+.lesson-item--ex.is-done {
+  border-color: var(--leaf);
+  box-shadow: 0 18px 34px -22px rgba(79, 122, 48, .8);
+}
+.lesson-item--ex.is-done::before { background: var(--leaf); }
+.lesson-item--ex.is-done .slide__kind { background: #DCEBCB; box-shadow: none; }
+
+/* Картки-відповіді: суцільні, з чіткою рамкою і «кнопковою» тінню */
 .option,
 .pair-btn,
 .chip-item,
 .order-item,
 .step {
-  background: rgba(255, 255, 255, .72);
-  border-color: rgba(31, 58, 43, .12);
-  box-shadow: 0 4px 12px -8px rgba(31, 58, 43, .35);
+  background: #fff;
+  border: 2px solid rgba(31, 58, 43, .3);
+  color: var(--text);
+  box-shadow: 0 3px 0 rgba(31, 58, 43, .22);
+  transition: transform .12s, border-color .12s, box-shadow .12s, background .12s;
 }
-.step { border: 1px solid rgba(31, 58, 43, .1); }
-.sort-pool { background: rgba(242, 233, 214, .55); }
-.sort-group { background: rgba(255, 255, 255, .45); }
-.flip { background: linear-gradient(160deg, #fff, var(--savanna)); box-shadow: var(--shadow-soft); }
+.option:hover:not(:disabled),
+.pair-btn:hover:not(:disabled),
+.chip-item:hover:not(:disabled) {
+  border-color: var(--orange);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 rgba(232, 115, 28, .45);
+}
+/* Вибрана картка */
+.chip-item.is-selected,
+.pair-btn.is-selected {
+  background: #FFDDBF;
+  border-color: var(--orange);
+  box-shadow: 0 3px 0 var(--orange-dark), 0 0 0 4px rgba(232, 115, 28, .25);
+}
+/* Правильно / неправильно */
+.option.is-right, .pair-btn.is-right, .chip-item.is-right, .order-item.is-right {
+  background: #DCEBCB;
+  border-color: var(--leaf);
+  color: var(--jungle);
+  box-shadow: 0 3px 0 var(--leaf);
+}
+.option.is-wrong, .pair-btn.is-wrong, .chip-item.is-wrong, .order-item.is-wrong {
+  background: #F7D9CF;
+  border-color: var(--wrong);
+  color: var(--wrong);
+  box-shadow: 0 3px 0 var(--wrong);
+}
+
+/* Місце, звідки беруть картки, і групи, куди їх кладуть */
+.sort-pool {
+  background: #F4EEE2;
+  border: 2px dashed rgba(31, 58, 43, .25);
+}
+.sort-group {
+  background: #FBF9F4;
+  border: 2px dashed rgba(31, 58, 43, .35);
+}
+.sort-group:hover, .sort-group.is-over { border-color: var(--orange); background: #FFF3E8; }
+.sort-group__title {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--jungle);
+  color: #fff;
+  font-size: .9rem;
+}
+
+.blank-input { background: #fff; border-left: 2px solid rgba(31, 58, 43, .2); border-right: 2px solid rgba(31, 58, 43, .2); border-top: 2px solid rgba(31, 58, 43, .2); }
+.turtle__canvas { background: #fff; border: 2px solid rgba(31, 58, 43, .25); }
+.flip { background: linear-gradient(160deg, #fff, var(--savanna)); border: 2px solid rgba(31, 58, 43, .18); box-shadow: 0 3px 0 rgba(31, 58, 43, .2); }
 .flip[aria-pressed="true"] { background: linear-gradient(160deg, #2F523D, var(--jungle)); }
-.blank-input { background: rgba(255, 255, 255, .8); }
 
 /* ---------------------------------------------------------------------
    ПІДВАЛ: темні «джунглі» зі смугастою кромкою
