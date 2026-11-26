@@ -803,6 +803,56 @@ body.vik-2-4 .option { padding: 14px 24px; font-size: 1.1rem; }
 .order-item.is-right { border-color: var(--leaf); background: #E3EDD8; }
 .order-item.is-wrong { border-color: var(--wrong); background: #F4DDD5; }
 
+/* Правда чи неправда */
+.tf-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.tf-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 2px solid rgba(31, 58, 43, .2);
+  background: #fff;
+}
+.tf-row__text { flex: 1 1 220px; font-weight: 700; }
+.tf-row__btns { display: flex; gap: 6px; }
+.tf-row__why { flex: 1 1 100%; font-size: .9rem; color: var(--jungle); }
+.tf-btn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 2px solid rgba(31, 58, 43, .3);
+  background: #fff;
+  font: 800 .9rem var(--font-body);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(31, 58, 43, .2);
+}
+.tf-btn:hover:not(:disabled) { border-color: var(--orange); }
+.tf-btn:disabled { cursor: default; opacity: .45; }
+.tf-btn.is-chosen { opacity: 1; background: var(--leaf); border-color: var(--leaf); color: #fff; box-shadow: none; }
+.tf-row.is-right { border-color: var(--leaf); background: #EEF5E6; }
+.tf-row.is-wrong { border-color: var(--wrong); background: #FBEAE4; }
+
+/* Практичне завдання */
+.practice__where {
+  display: inline-block;
+  margin: 0 0 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--savanna);
+  font-weight: 800;
+  font-size: .9rem;
+}
+.practice__result {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  border-left: 4px solid var(--orange);
+  border-radius: 0 12px 12px 0;
+  background: #FFF4EA;
+}
+
 /* Пропуски */
 .blank-text { font-size: 1.1rem; line-height: 2.4; }
 .blank-input {

@@ -456,7 +456,7 @@
     }
 
     // --- Кроки: відмітка виконаного ---
-    app.querySelectorAll(".step").forEach(function (к) {
+    app.querySelectorAll(".steps:not(.practice__steps) .step").forEach(function (к) {
       к.addEventListener("click", function () {
         к.setAttribute("aria-pressed", String(к.getAttribute("aria-pressed") !== "true"));
       });
@@ -971,6 +971,80 @@
     },
 
     /* Міні-гра: керуй стрілками, збирай зірки. Показує, як працює розгалуження */
+    /* Правда чи неправда: кілька тверджень, на кожне — «Правда» або «Неправда» */
+    "правда": function (с, el, готово) {
+      el.innerHTML = заголовокВправи(с) +
+        '<p class="slide__hint">Прочитай кожне твердження і натисни «Правда» або «Неправда».</p>' +
+        '<ul class="tf-list">' + с.твердження.map(function (т, і) {
+          return '<li class="tf-row" data-i="' + і + '"><span class="tf-row__text">' + т.текст + "</span>" +
+            '<span class="tf-row__btns"><button type="button" class="tf-btn tf-btn--yes" data-v="1">Правда</button>' +
+            '<button type="button" class="tf-btn tf-btn--no" data-v="0">Неправда</button></span></li>';
+        }).join("") + '</ul><p class="feedback" aria-live="polite"></p>';
+      const відгук = el.querySelector(".feedback");
+      let правильно = 0;
+      el.querySelectorAll(".tf-row").forEach(function (рядок) {
+        const т = с.твердження[Number(рядок.dataset.i)];
+        рядок.querySelectorAll(".tf-btn").forEach(function (к) {
+          к.addEventListener("click", function () {
+            if ((к.dataset.v === "1") === Boolean(т.правда)) {
+              рядок.classList.remove("is-wrong");
+              рядок.classList.add("is-right");
+              к.classList.add("is-chosen");
+              рядок.querySelectorAll(".tf-btn").forEach(function (б) { б.disabled = true; });
+              if (т.пояснення) рядок.insertAdjacentHTML("beforeend", '<span class="tf-row__why">' + т.пояснення + "</span>");
+              правильно++;
+              if (правильно === с.твердження.length) {
+                відгук.className = "feedback feedback--right";
+                відгук.textContent = "Усі відповіді правильні! 🎉";
+                готово();
+              } else {
+                відгук.className = "feedback";
+                відгук.textContent = "";
+              }
+            } else {
+              рядок.classList.add("is-wrong");
+              к.disabled = true;
+              відгук.className = "feedback feedback--wrong";
+              відгук.textContent = "Не зовсім. Подумай ще раз над червоним рядком.";
+            }
+          });
+        });
+      });
+    },
+
+    /* Практичне завдання: дитина виконує його за комп'ютером, у зошиті чи вдома
+       і відмічає кожен крок. Коли всі кроки відмічено — завдання виконано. */
+    "практика": function (с, el, готово) {
+      el.innerHTML = заголовокВправи(с) +
+        (с.де ? '<p class="practice__where">📍 ' + с.де + "</p>" : "") +
+        '<p class="slide__hint">Виконуй кроки по черзі й натискай на кожен, коли зробиш.</p>' +
+        '<ol class="steps practice__steps">' + с.кроки.map(function (к, і) {
+          return '<li><button type="button" class="step" aria-pressed="false"><span class="step__num">' + (і + 1) +
+            '</span><span class="step__text">' + к + "</span></button></li>";
+        }).join("") + "</ol>" +
+        (с.результат ? '<p class="practice__result"><b>Що має вийти:</b> ' + с.результат + "</p>" : "") +
+        '<p class="feedback" aria-live="polite"></p>';
+      const кроки = Array.prototype.slice.call(el.querySelectorAll(".step"));
+      const відгук = el.querySelector(".feedback");
+      let завершено = false;
+      кроки.forEach(function (к) {
+        к.addEventListener("click", function () {
+          if (завершено) return;
+          к.setAttribute("aria-pressed", String(к.getAttribute("aria-pressed") !== "true"));
+          const зроблено = кроки.filter(function (б) { return б.getAttribute("aria-pressed") === "true"; }).length;
+          if (зроблено === кроки.length) {
+            завершено = true;
+            відгук.className = "feedback feedback--right";
+            відгук.textContent = "Практичне завдання виконано! 💪";
+            готово();
+          } else {
+            відгук.className = "feedback";
+            відгук.textContent = "Виконано кроків: " + зроблено + " з " + кроки.length;
+          }
+        });
+      });
+    },
+
     "стрілки": function (с, el, готово) {
       const N = с.розмір || 5;
       const потрібно = с.зірок || 3;
@@ -1060,7 +1134,7 @@
   };
 
   // Типи, які є вправами (їх треба виконати; решта — пояснення)
-  const ВПРАВИ = ["вибір", "сортування", "пари", "порядок", "пропуск", "черепашка", "стрілки"];
+  const ВПРАВИ = ["вибір", "сортування", "пари", "порядок", "пропуск", "черепашка", "стрілки", "правда", "практика"];
 
   /* ---------- Інтерактивний урок прямо на сторінці теми ----------
      Усі пояснення й вправи уроку йдуть одна за одною (без слайдів).
@@ -1068,7 +1142,7 @@
   function урокНаСторінці(слайди, ключ) {
     const html = слайди.map(function (с, і) {
       const вправа = ВПРАВИ.indexOf(с.тип) !== -1;
-      return '<div class="lesson-item' + (вправа ? " lesson-item--ex" : "") + '" data-i="' + і + '"><div class="slide"></div></div>';
+      return '<div class="lesson-item' + (вправа ? " lesson-item--ex" : "") + (с.тип === "практика" ? " lesson-item--practice" : "") + '" data-i="' + і + '"><div class="slide"></div></div>';
     }).join("");
     const вправ = слайди.filter(function (с) { return ВПРАВИ.indexOf(с.тип) !== -1; }).length;
     return '<section class="block lesson-inline" id="urok">' +
@@ -1113,7 +1187,9 @@
       if (ВПРАВИ.indexOf(с.тип) !== -1) {
         номерВправи++;
         const мітка = пункт.querySelector(".slide__kind");
-        if (мітка) мітка.innerHTML = ui(с.тип === "вибір" ? "question" : "puzzle") + " Вправа " + номерВправи + " з " + вправ;
+        if (мітка) мітка.innerHTML = с.тип === "практика"
+          ? ui("steps") + " Практика · " + номерВправи + " з " + вправ
+          : ui(с.тип === "вибір" ? "question" : "puzzle") + " Вправа " + номерВправи + " з " + вправ;
       }
     });
     оновити();

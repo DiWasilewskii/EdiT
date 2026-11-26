@@ -392,6 +392,12 @@ body.vik-7-9 .topic-card { background: var(--glass); border: 1px solid var(--gla
   background: #F1F6EA;
   color: var(--jungle);
 }
+/* Практичне завдання — темно-зелена мітка, щоб відрізнялось від вправ на сайті */
+.lesson-item--practice { border-color: rgba(31, 58, 43, .55); box-shadow: 0 18px 34px -20px rgba(31, 58, 43, .6); }
+.lesson-item--practice .slide__kind { background: var(--jungle); color: #fff; box-shadow: none; }
+.lesson-item--practice::before { background: var(--jungle); }
+.lesson-item--practice .slide__kind .ico { filter: invert(1) brightness(2); }
+
 /* Виконана вправа — зелена */
 .lesson-item--ex.is-done {
   border-color: var(--leaf);
