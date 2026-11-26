@@ -166,6 +166,14 @@
     return значок(к ? к.іконка : "📌", "ico--sm");
   }
 
+  // Українська множина: 1 вправа, 3 вправи, 5 вправ, 21 вправа
+  function множина(n, одна, кілька, багато) {
+    const д = n % 10, с = n % 100;
+    if (д === 1 && с !== 11) return одна;
+    if (д >= 2 && д <= 4 && (с < 12 || с > 14)) return кілька;
+    return багато;
+  }
+
   // Іконка: шлях до SVG-файлу (img/icons/…) або емодзі
   function значок(значення, клас) {
     const к = клас ? " " + клас : "";
@@ -395,7 +403,8 @@
       const вправ = урок.filter(function (с) { return ВПРАВИ.indexOf(с.тип) !== -1; }).length;
       html += '<button type="button" class="lesson-cta" data-to-urok>' +
         '<span class="lesson-cta__play">' + значок("img/icons/ui-play-orange.svg") + "</span>" +
-        '<span class="lesson-cta__text"><b>Інтерактивний урок</b><small>' + вправ + " вправ — нижче на цій сторінці ↓</small></span>" +
+        '<span class="lesson-cta__text"><b>Інтерактивний урок</b><small>' + вправ + " " +
+        множина(вправ, "вправа", "вправи", "вправ") + " — нижче на цій сторінці ↓</small></span>" +
         (пройдено("u-" + ключ) ? '<span class="lesson-cta__done">пройдено ✓</span>' : "") + "</button>";
     }
 

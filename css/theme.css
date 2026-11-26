@@ -249,6 +249,19 @@ h1:not(.logo),
   pointer-events: none;
 }
 .lesson-cta > * { position: relative; z-index: 1; }
+.lesson-cta__done { flex: 0 0 auto; white-space: nowrap; }
+/* На телефоні значок «пройдено ✓» — маленька наліпка в куті кнопки */
+@media (max-width: 520px) {
+  .lesson-cta { padding-right: 16px; }
+  .lesson-cta > .lesson-cta__done {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    padding: 2px 10px;
+    font-size: .75rem;
+  }
+  .lesson-cta { padding-top: 34px; }
+}
 
 /* ---------------------------------------------------------------------
    СКЛЯНІ ПАНЕЛІ Й КАРТКИ
