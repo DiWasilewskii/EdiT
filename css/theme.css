@@ -702,6 +702,54 @@ body.vik-7-9 .topic-card { background: var(--glass); border: 1px solid var(--gla
   -webkit-backdrop-filter: blur(14px);
           backdrop-filter: blur(14px);
 }
+.footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 0;
+  text-align: left;
+}
+.footer__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: inherit;
+  text-decoration: none;
+}
+/* Лого в підвалі: усі літери смугасті (на темному тлі добре видно) */
+.footer__logo {
+  font: 800 2rem/1.1 var(--font-head);
+  background: var(--stripes) 0 0 / 1.15em 1.15em repeat;
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+/* Кнопка YouTube — червона, як у самого YouTube */
+.footer__yt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #E62117;
+  color: #FAF8F3;
+  font: 700 .85rem var(--font-body);
+  text-decoration: none;
+  box-shadow: 0 6px 14px -8px rgba(230, 33, 23, .8);
+  transition: transform .15s, filter .15s;
+}
+.footer__yt .ico { width: 18px; height: 18px; }
+.footer__yt:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.footer__yt:focus-visible, .footer__brand:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+@media (max-width: 520px) {
+  .footer__inner { flex-direction: column; text-align: center; }
+  .footer__brand { align-items: center; }
+}
 .footer::before {
   content: "";
   position: absolute;

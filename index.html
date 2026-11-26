@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/style.css?v=2026-11-27e">
+  <link rel="stylesheet" href="css/style.css?v=2026-11-27g">
   <!-- Сучасний вигляд: скло й тигрові смуги -->
-  <link rel="stylesheet" href="css/theme.css?v=2026-11-27e">
+  <link rel="stylesheet" href="css/theme.css?v=2026-11-27g">
 </head>
 <body>
 
@@ -42,14 +42,24 @@
   <main id="app" tabindex="-1"></main>
 
   <footer class="footer">
-    EdiT · Education • Digital • Innovation • Technology
+    <div class="footer__inner">
+      <!-- Лого: смугасті літери, як у шапці -->
+      <a href="#/" class="footer__brand" aria-label="EdiT — на головну">
+        <span class="footer__logo" aria-hidden="true">EdiT</span>
+      </a>
+      <!-- Посилання на YouTube-канал автора -->
+      <a class="footer__yt" href="https://www.youtube.com/@DiWasilewskii" target="_blank" rel="noopener" aria-label="YouTube-канал (відкриється в новій вкладці)">
+        <img class="ico" src="img/icons/ui-youtube.svg" alt="" aria-hidden="true">
+        <span>YouTube</span>
+      </a>
+    </div>
   </footer>
 
   <!-- Спочатку дані тем і уроків, потім логіка сайту.
        ?v=… — номер версії: після змін у файлах змініть його всюди,
        щоб браузери одразу завантажили нові файли, а не старі з кешу. -->
-  <script src="js/topics.js?v=2026-11-27e"></script>
-  <script src="js/lessons.js?v=2026-11-27e"></script>
-  <script src="js/app.js?v=2026-11-27e"></script>
+  <script src="js/topics.js?v=2026-11-27g"></script>
+  <script src="js/lessons.js?v=2026-11-27g"></script>
+  <script src="js/app.js?v=2026-11-27g"></script>
 </body>
 </html>
