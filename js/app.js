@@ -256,9 +256,7 @@
       html += '<span class="logo__item" aria-hidden="true"><span class="logo__letter">' + с[0] +
         '</span><span class="logo__word">' + с[1] + "</span></span>";
     });
-    html += "</h1>" +
-      '<p class="hero__hello">Привіт! Тут ти навчишся впевнено працювати з комп\'ютером, ' +
-      "створювати власні проєкти й безпечно користуватися інтернетом.</p></section>";
+    html += "</h1></section>";
 
     html += тайгер("Привіт! Я Тайгер. Обери свій клас, щоб побачити теми.", "hello");
 
