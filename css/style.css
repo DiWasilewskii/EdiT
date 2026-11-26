@@ -44,6 +44,9 @@ body.vik-7-9 {
 
 html { -webkit-text-size-adjust: 100%; }
 
+/* Атрибут hidden завжди ховає елемент, навіть якщо в нього є display */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   background: var(--bg);
@@ -359,8 +362,8 @@ main {
 }
 .tiger__pic {
   flex: 0 0 auto;
-  width: 84px;
-  height: 84px;
+  width: 104px;
+  height: 104px;
   animation: tiger-nod 3s ease-in-out infinite;
   transform-origin: 50% 90%;
 }
@@ -382,7 +385,11 @@ main {
   0%, 100% { transform: rotate(0); }
   50% { transform: rotate(-4deg); }
 }
-body.vik-7-9 .tiger__pic { width: 60px; height: 60px; animation: none; }
+body.vik-7-9 .tiger__pic { width: 72px; height: 72px; animation: none; }
+/* На головній і у великих повідомленнях Тайгер більший */
+.hero + .tiger .tiger__pic,
+.empty .tiger__pic,
+.slide--final .tiger__pic { width: 150px; height: 150px; }
 
 /* =====================================================================
    СТОРІНКА КЛАСУ / СПИСОК ТЕМ
@@ -565,6 +572,395 @@ body.vik-2-4 .option { padding: 14px 24px; font-size: 1.1rem; }
   font-size: 1.1rem;
 }
 
+/* =====================================================================
+   ІНТЕРАКТИВНИЙ УРОК
+   ===================================================================== */
+
+/* Кнопка «Інтерактивний урок» на сторінці теми */
+.lesson-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 18px 0 4px;
+  padding: 16px 20px;
+  border-radius: var(--radius);
+  background: var(--orange);
+  color: var(--text);
+  text-decoration: none;
+  box-shadow: 0 5px 0 var(--orange-dark);
+  transition: transform .15s;
+}
+.lesson-cta:hover { transform: translateY(-2px); }
+.lesson-cta__play {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--jungle);
+  color: var(--orange);
+  font-size: 1.4rem;
+}
+.lesson-cta__text { display: flex; flex-direction: column; flex: 1; }
+.lesson-cta__text b { font: 700 1.15rem var(--font-head); }
+.lesson-cta__text small { font-weight: 700; }
+.lesson-cta__done {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--jungle);
+  color: var(--bg);
+  font-weight: 800;
+  font-size: .85rem;
+}
+
+/* Смуга прогресу і сцена */
+.lesson__bar {
+  height: 10px;
+  margin: 14px 0;
+  border-radius: 999px;
+  background: var(--savanna);
+  overflow: hidden;
+}
+.lesson__bar-fill {
+  height: 100%;
+  width: 0;
+  background: var(--leaf);
+  transition: width .3s;
+}
+.lesson__stage {
+  min-height: 340px;
+  padding: 24px;
+  border-radius: var(--radius);
+  background: #fff;
+  border: 2px solid var(--savanna);
+}
+.slide { animation: slide-in .3s ease both; }
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: none; }
+}
+.slide__icon { font-size: 3.2rem; line-height: 1; margin-bottom: 8px; }
+.slide__kind {
+  margin: 0 0 4px;
+  font-weight: 800;
+  font-size: .85rem;
+  color: var(--leaf);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.slide__hint { font-size: .9rem; color: var(--leaf); font-weight: 700; }
+.slide--final { text-align: center; }
+.slide--final .tiger { justify-content: center; text-align: left; }
+.slide--final .done-bar { justify-content: center; }
+
+.lesson__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+.lesson__nav .btn:disabled { opacity: .4; cursor: not-allowed; }
+.lesson__count { font: 700 .95rem var(--font-head); color: var(--jungle); }
+.lesson__skip { text-align: center; margin: 10px 0 0; }
+.link-btn {
+  border: 0;
+  background: none;
+  color: var(--leaf);
+  font: 700 .9rem var(--font-body);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.options--col { flex-direction: column; align-items: stretch; }
+.options--col .option { text-align: left; }
+.ex-actions { margin-top: 16px; }
+.ex-actions .btn:disabled { opacity: .5; cursor: default; }
+
+/* Картки-перевертайки */
+.flip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+.flip {
+  min-height: 120px;
+  padding: 14px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--savanna);
+  color: var(--text);
+  font: 700 1rem var(--font-body);
+  cursor: pointer;
+  transition: transform .2s;
+}
+.flip:hover { transform: translateY(-2px); }
+.flip__front { font: 700 1.05rem var(--font-head); color: var(--jungle); }
+.flip__back { display: none; font-weight: 600; }
+.flip[aria-pressed="true"] { background: var(--jungle); color: var(--bg); animation: flip .3s ease; }
+.flip[aria-pressed="true"] .flip__front { display: none; }
+.flip[aria-pressed="true"] .flip__back { display: block; }
+@keyframes flip {
+  from { transform: rotateY(90deg); }
+  to   { transform: none; }
+}
+
+/* Картки для сортування й банку слів */
+.chip-item {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 2px solid var(--savanna);
+  background: var(--bg);
+  color: var(--text);
+  font: 700 .95rem var(--font-body);
+  cursor: grab;
+  text-align: left;
+}
+.chip-item:hover:not(:disabled) { border-color: var(--orange); }
+.chip-item.is-selected { border-color: var(--orange); background: #FBE3CF; box-shadow: 0 0 0 3px rgba(232,115,28,.3); }
+.chip-item.is-right { border-color: var(--leaf); background: #E3EDD8; }
+.chip-item.is-wrong { border-color: var(--wrong); background: #F4DDD5; }
+.chip-item:disabled { cursor: default; }
+
+.sort-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 56px;
+  padding: 10px;
+  border-radius: 14px;
+  background: var(--savanna-lt);
+}
+.sort-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+.sort-group {
+  min-height: 130px;
+  padding: 10px;
+  border: 3px dashed var(--savanna);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.sort-group:hover, .sort-group.is-over { border-color: var(--orange); background: #FFF8F1; }
+.sort-group__title { font: 700 .95rem var(--font-head); color: var(--jungle); margin-bottom: 8px; }
+.sort-group__items { display: flex; flex-direction: column; gap: 6px; }
+
+/* Пари */
+.pairs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pairs__col { display: flex; flex-direction: column; gap: 8px; }
+.pair-btn {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 2px solid var(--savanna);
+  background: var(--bg);
+  color: var(--text);
+  font: 700 .95rem var(--font-body);
+  text-align: left;
+  cursor: pointer;
+}
+.pair-btn:hover:not(:disabled) { border-color: var(--orange); }
+.pair-btn.is-selected { border-color: var(--orange); background: #FBE3CF; }
+.pair-btn.is-right { border-color: var(--leaf); background: #E3EDD8; color: var(--jungle); }
+.pair-btn.is-wrong { border-color: var(--wrong); background: #F4DDD5; animation: shake .3s; }
+.pair-btn:disabled { cursor: default; }
+@keyframes shake {
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* Порядок */
+.order-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 2px solid var(--savanna);
+  background: var(--bg);
+}
+.order-item__num {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 1.9em;
+  height: 1.9em;
+  border-radius: 50%;
+  background: var(--orange);
+  font: 700 .85rem var(--font-head);
+}
+.order-item__text { flex: 1; font-weight: 700; }
+.order-item__btns { display: flex; gap: 4px; }
+.order-item__btns button {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--savanna);
+  color: var(--jungle);
+  font: 800 1.1rem var(--font-body);
+  cursor: pointer;
+}
+.order-item__btns button:disabled { opacity: .3; cursor: default; }
+.order-item.is-right { border-color: var(--leaf); background: #E3EDD8; }
+.order-item.is-wrong { border-color: var(--wrong); background: #F4DDD5; }
+
+/* Пропуски */
+.blank-text { font-size: 1.1rem; line-height: 2.4; }
+.blank-input {
+  width: 9em;
+  margin: 0 4px;
+  padding: 4px 10px;
+  border: 0;
+  border-bottom: 3px solid var(--orange);
+  border-radius: 6px 6px 0 0;
+  background: var(--savanna-lt);
+  font: 700 1rem var(--font-body);
+  color: var(--text);
+}
+.blank-input.is-right { border-color: var(--leaf); background: #E3EDD8; }
+.blank-input.is-wrong { border-color: var(--wrong); background: #F4DDD5; }
+.word-bank { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Блоки як у Скретчі (кольори розділів Скретчу, щоб діти їх впізнавали) */
+.blk {
+  width: fit-content;
+  max-width: 100%;
+  margin: 3px 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: .95rem;
+  color: #1C1A17;
+}
+.blk--event   { background: #FFBF00; border-radius: 18px 18px 8px 8px; }
+.blk--motion  { background: #6FA8FF; }
+.blk--control { background: #FFAB19; }
+.blk-body {
+  margin: 6px 0 4px 14px;
+  padding-left: 8px;
+  border-left: 4px solid rgba(28,26,23,.25);
+}
+.blk-input, .blk-val {
+  display: inline-block;
+  min-width: 3.2em;
+  margin: 0 2px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fff;
+  text-align: center;
+  font: 800 .95rem var(--font-body);
+  color: var(--text);
+}
+.blk-input { width: 4.5em; border: 2px solid var(--jungle); }
+.blk-val { opacity: .85; }
+.blk-cond {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #E8D9B8;
+  font-weight: 700;
+}
+.blk--if.is-active { box-shadow: 0 0 0 3px var(--jungle); }
+
+/* Черепашка */
+.turtle { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.turtle__code { flex: 1 1 260px; }
+.turtle__run { margin-top: 12px; }
+.turtle__canvas {
+  flex: 0 1 320px;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  background: var(--bg);
+  border: 2px solid var(--savanna);
+}
+
+/* Міні-гра зі стрілками */
+.game { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.game__play { flex: 0 1 300px; width: 100%; max-width: 300px; }
+.game__board {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  gap: 4px;
+  padding: 6px;
+  border-radius: 14px;
+  background: var(--jungle);
+}
+.game__cell {
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--leaf);
+  font-size: 1.6rem;
+}
+.game__side { flex: 1 1 260px; }
+.game__code .blk { font-size: .85rem; }
+.game__info { font-weight: 700; }
+.game__pad {
+  display: grid;
+  grid-template-columns: repeat(3, 52px);
+  grid-template-areas: ". up ." "left down right";
+  gap: 6px;
+}
+.game__pad button {
+  height: 52px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--orange);
+  color: var(--text);
+  font: 800 1.4rem var(--font-body);
+  cursor: pointer;
+}
+.game__pad [data-key="ArrowUp"]    { grid-area: up; }
+.game__pad [data-key="ArrowLeft"]  { grid-area: left; }
+.game__pad [data-key="ArrowDown"]  { grid-area: down; }
+.game__pad [data-key="ArrowRight"] { grid-area: right; }
+
+@media (max-width: 520px) {
+  .lesson__stage { padding: 16px; }
+  .pairs { gap: 8px; }
+  .pair-btn { font-size: .85rem; padding: 10px; }
+}
+
+/* =====================================================================
+   ІКОНКИ (img/icons, набір Tabler Icons)
+   ===================================================================== */
+.ico, .ico-emoji { display: inline-block; flex: 0 0 auto; }
+.ico { width: 1em; height: 1em; vertical-align: -0.15em; }
+.ico--ui { width: 1.15em; height: 1.15em; vertical-align: -0.2em; }
+.ico--sm { width: 1.15em; height: 1.15em; vertical-align: -0.22em; }
+.ico--lg { width: 1.5em; height: 1.5em; }
+
+/* Іконка теми в «кружечку» */
+.topic-card__icon, .topic-head__icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 16px;
+  line-height: 1;
+}
+.topic-card__icon { width: 56px; height: 56px; background: var(--bg); font-size: 1.9rem; }
+.topic-card__icon .ico { width: 32px; height: 32px; }
+.topic-head__icon { width: 68px; height: 68px; background: var(--savanna); font-size: 2.3rem; }
+.topic-head__icon .ico { width: 40px; height: 40px; }
+body.vik-2-4 .topic-card__icon { width: 68px; height: 68px; font-size: 2.4rem; }
+body.vik-2-4 .topic-card__icon .ico { width: 40px; height: 40px; }
+body.vik-7-9 .topic-card__icon { background: var(--savanna-lt); }
+
+.lesson-cta__play .ico { width: 26px; height: 26px; }
+.slide__icon .ico { width: 56px; height: 56px; }
+.extra-btn .ico { width: 1.6em; height: 1.6em; }
+.game__tiger { width: 90%; height: 90%; }
+
 /* ---------- Підвал ---------- */
 .footer {
   text-align: center;
@@ -584,7 +980,7 @@ body.vik-2-4 .option { padding: 14px 24px; font-size: 1.1rem; }
 @media (max-width: 520px) {
   .grades { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .block { padding: 16px; }
-  .tiger__pic { width: 64px; height: 64px; }
+  .tiger__pic { width: 84px; height: 84px; }
   .topic-head__icon { font-size: 2.4rem; }
 }
 
