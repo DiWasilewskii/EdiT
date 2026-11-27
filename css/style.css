@@ -1246,6 +1246,35 @@ body.vik-7-9 .topic-card__icon { background: var(--savanna-lt); }
   25%           { transform: translateY(-24px); }
 }
 
+/* ---------- Кнопка «Підказка» у вправах (Тайгер підкаже) ---------- */
+.has-hint { position: relative; }
+.hint-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border: 2px solid var(--orange);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--orange-dark);
+  font: 800 .82rem var(--font-body);
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.hint-btn:hover { background: var(--orange); color: var(--text); }
+.hint-btn:focus-visible { outline: 3px solid var(--jungle); outline-offset: 2px; }
+.lesson-item.is-done .hint-btn { display: none; }
+/* Щоб заголовок вправи не заходив під кнопку */
+.has-hint .slide__kind, .has-hint .question__text { padding-right: 120px; }
+#roz-pytannia .question.has-hint .hint-btn { top: 0; right: 0; }
+@media (max-width: 520px) {
+  .hint-btn { position: static; margin-top: 10px; }
+  .has-hint .slide__kind, .has-hint .question__text { padding-right: 0; }
+}
+
 /* Блок, до якого прокрутив Тайгер, коротко світиться */
 .is-pointed { animation: helper-point 1.6s ease-out; }
 @keyframes helper-point {
