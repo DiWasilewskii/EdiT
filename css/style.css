@@ -1203,6 +1203,49 @@ body.vik-7-9 .topic-card__icon { background: var(--savanna-lt); }
 .helper__opt--main:hover { background: var(--orange-dark); border-color: var(--orange-dark); }
 .helper__opt--back { border-color: transparent; background: none; color: var(--leaf); }
 
+/* ---------- Тайгер гуляє (js/app.js, «Тайгер гуляє по сайту») ---------- */
+.helper__walker { position: relative; will-change: transform; }
+.helper__art { display: block; width: 100%; height: 100%; transition: transform .2s ease; }
+.helper__walker.is-facing-left .helper__art { transform: scaleX(-1); }
+
+/* Коротка репліка над Тайгером */
+.helper__speech {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  right: 0;
+  width: max-content;
+  max-width: 240px;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 16px 16px 4px 16px;
+  background: #fff;
+  border: 2px solid var(--savanna);
+  box-shadow: 0 12px 26px -12px rgba(31, 58, 43, .45);
+  font: 700 .92rem/1.35 var(--font-body);
+  color: var(--text);
+  cursor: pointer;
+  animation: helper-in .2s ease-out;
+}
+.helper__speech[hidden] { display: none; }
+.helper__walker.is-left .helper__speech { right: auto; left: 0; border-radius: 16px 16px 16px 4px; }
+
+/* Ходьба: тіло погойдується, ноги по черзі крокують */
+.helper__walker.is-walking .helper__btn { animation: none; }
+.is-walking .t-body { transform-origin: 50% 100%; animation: tiger-walk-bob .44s ease-in-out infinite; }
+.is-walking .t-legs path:nth-child(1),
+.is-walking .t-feet path:nth-child(1) { animation: tiger-step .44s ease-in-out infinite; }
+.is-walking .t-legs path:nth-child(2),
+.is-walking .t-feet path:nth-child(2) { animation: tiger-step .44s ease-in-out -.22s infinite; }
+@keyframes tiger-walk-bob {
+  0%, 50%, 100% { transform: translateY(0) rotate(0); }
+  25%           { transform: translateY(-10px) rotate(-2deg); }
+  75%           { transform: translateY(-10px) rotate(2deg); }
+}
+@keyframes tiger-step {
+  0%, 50%, 100% { transform: translateY(0); }
+  25%           { transform: translateY(-24px); }
+}
+
 /* Блок, до якого прокрутив Тайгер, коротко світиться */
 .is-pointed { animation: helper-point 1.6s ease-out; }
 @keyframes helper-point {

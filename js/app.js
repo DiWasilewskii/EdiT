@@ -1445,8 +1445,13 @@
           '<div class="helper__say"><span class="tiger__name">Тайгер</span><p id="helperText" aria-live="polite"></p></div></div>' +
         '<div class="helper__options" id="helperOptions"></div>' +
       "</div>" +
-      '<button type="button" class="helper__btn" id="helperBtn" aria-expanded="false" aria-controls="helperPanel" aria-label="Тайгер-помічник: попросити допомогу">' +
-        малюнокТайгера("hello", "helper__pic") + '<span class="helper__badge" aria-hidden="true">?</span></button>' +
+      // «Ходок»: Тайгер разом зі своєю реплікою — саме його ми водимо по низу екрана
+      '<div class="helper__walker" id="helperWalker">' +
+        '<p class="helper__speech" id="helperSpeech" aria-live="polite" hidden></p>' +
+        '<button type="button" class="helper__btn" id="helperBtn" aria-expanded="false" aria-controls="helperPanel" aria-label="Тайгер-помічник: попросити допомогу">' +
+          '<span class="helper__art" id="helperArt">' + малюнокТайгера("hello", "helper__pic") + "</span>" +
+          '<span class="helper__badge" aria-hidden="true">?</span></button>' +
+      "</div>" +
     "</div>");
 
   const помічник = document.getElementById("helper");
@@ -1499,6 +1504,7 @@
 
   function відкритиПомічника() {
     закритиМеню();
+    тайгерДодому(true);
     меню();
     панельПомічника.hidden = false;
     помічник.classList.add("is-open");
@@ -1532,6 +1538,127 @@
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && !панельПомічника.hidden) { закритиПомічника(); кнопкаПомічника.focus(); }
   });
+
+  /* ---------- Тайгер гуляє по сайту ----------
+     Час від часу Тайгер виходить зі свого кутка, йде низом екрана,
+     зупиняється, щось каже й повертається додому. А ще радіє правильним
+     відповідям і підбадьорює після помилок.
+     Не гуляє: у 7–9 класах, на вузьких екранах, при «зменшити рух»,
+     коли віконце відкрите або вкладка прихована. */
+  const ходок = document.getElementById("helperWalker");
+  const малюнокХодока = document.getElementById("helperArt");
+  const репліка = document.getElementById("helperSpeech");
+  const ШВИДКІСТЬ_ХОДИ = 110;              // пікселів за секунду
+  const ПАУЗА_МІЖ_ПРОГУЛЯНКАМИ = [25000, 45000];  // мс: від і до (випадково)
+  const меншеРуху = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let позиціяХодока = 0;   // зсув від кутка в px (від'ємний — ліворуч)
+  let поточнаПоза = "hello";
+  let таймерПрогулянки = null, таймерРепліки = null, таймерПози = null, таймерКроку = null;
+
+  function випадкове(список) { return список[Math.floor(Math.random() * список.length)]; }
+
+  function можнаГуляти() {
+    return !меншеРуху.matches && !document.body.classList.contains("vik-7-9") &&
+      window.innerWidth >= 600 && панельПомічника.hidden && !document.hidden;
+  }
+
+  function позаХодока(поза) {
+    if (поза === поточнаПоза) return;
+    поточнаПоза = поза;
+    малюнокХодока.innerHTML = малюнокТайгера(поза, "helper__pic");
+  }
+
+  function показатиРепліку(текст, мс) {
+    clearTimeout(таймерРепліки);
+    репліка.innerHTML = текст;
+    // Біля лівого краю репліка стає праворуч від Тайгера, щоб не вилізти за екран
+    ходок.classList.toggle("is-left", ходок.getBoundingClientRect().left < 260);
+    репліка.hidden = false;
+    таймерРепліки = setTimeout(сховатиРепліку, мс || 3500);
+  }
+  function сховатиРепліку() { clearTimeout(таймерРепліки); репліка.hidden = true; }
+
+  // Іти до точки (зсув від кутка); коли дійде — викликати далі()
+  function йтиДо(ціль, далі, швидко) {
+    const відстань = Math.abs(ціль - позиціяХодока);
+    clearTimeout(таймерКроку);
+    if (відстань < 2) { ходок.classList.remove("is-walking"); if (далі) далі(); return; }
+    позаХодока("hello");   // тільки в цій позі видно ноги
+    ходок.classList.toggle("is-facing-left", ціль < позиціяХодока);
+    ходок.classList.add("is-walking");
+    const час = швидко ? 0.35 : відстань / ШВИДКІСТЬ_ХОДИ;
+    ходок.style.transition = "transform " + час + "s linear";
+    ходок.style.transform = "translateX(" + ціль + "px)";
+    позиціяХодока = ціль;
+    таймерКроку = setTimeout(function () {
+      ходок.classList.remove("is-walking", "is-facing-left");
+      if (далі) далі();
+    }, час * 1000);
+  }
+
+  function запланувати(через) {
+    clearTimeout(таймерПрогулянки);
+    const [від, до] = ПАУЗА_МІЖ_ПРОГУЛЯНКАМИ;
+    таймерПрогулянки = setTimeout(прогулянка, через || від + Math.random() * (до - від));
+  }
+
+  function тайгерДодому(швидко) {
+    сховатиРепліку();
+    йтиДо(0, null, швидко);
+    запланувати();
+  }
+
+  function фразаПрогулянки() {
+    if (Math.random() < 0.35) return випадкове(ПОРАДИ_ТАЙГЕРА);
+    const фрази = {
+      головна: ["Обирай свій клас — і вперед!", "Я тут гуляю. Натисни на мене, якщо треба допомога!"],
+      клас: ["Натисни на розділ — там ховаються теми.", "Яку тему сьогодні вивчаємо?"],
+      поза: ["Тут багато цікавого. Спробуй фільтри!"],
+      тема: ["Застряг? Натисни на мене — підкажу!", "Не забудь про «Перевір себе» внизу!", "Ти молодець, що вчишся!"]
+    }[контекстПомічника];
+    return випадкове(фрази || ["Натисни на мене, якщо заблукав!"]);
+  }
+
+  function прогулянка() {
+    if (!можнаГуляти()) { запланувати(); return; }
+    const найдалі = -(window.innerWidth - ходок.offsetWidth - 60);   // майже до лівого краю
+    const ціль = Math.round(найдалі * (0.35 + Math.random() * 0.6));
+    йтиДо(ціль, function () {
+      позаХодока(Math.random() < 0.5 ? "tip" : "hello");
+      показатиРепліку(фразаПрогулянки(), 4200);
+      таймерПрогулянки = setTimeout(function () {
+        йтиДо(0, function () { позаХодока("hello"); запланувати(); });
+      }, 5000);
+    });
+  }
+
+  // Реакції на відповіді: стежимо за блоками .feedback, які змінюють вправи й «Перевір себе»
+  const ПОХВАЛА = ["Правильно!", "Так тримати!", "Супер!", "Молодець!", "Ого, як швидко!"];
+  const ПІДТРИМКА = ["Нічого, спробуй ще!", "Помилки допомагають вчитися.", "Майже! Подумай ще трошки."];
+  function реакція(поза, фрази) {
+    if (!панельПомічника.hidden) return;
+    const іде = ходок.classList.contains("is-walking");
+    clearTimeout(таймерПози);
+    if (!іде) позаХодока(поза);
+    показатиРепліку(випадкове(фрази), 2600);
+    таймерПози = setTimeout(function () {
+      if (!ходок.classList.contains("is-walking") && репліка.hidden) позаХодока("hello");
+    }, 2700);
+  }
+  new MutationObserver(function (зміни) {
+    for (const з of зміни) {
+      const блок = з.target;
+      if (!блок.classList.contains("feedback")) continue;
+      if (блок.classList.contains("feedback--right")) { реакція("happy", ПОХВАЛА); return; }
+      if (блок.classList.contains("feedback--wrong")) { реакція("oops", ПІДТРИМКА); return; }
+    }
+  }).observe(app, { attributes: true, attributeFilter: ["class"], subtree: true });
+
+  // Натиснули на репліку — теж відкриваємо помічника
+  репліка.addEventListener("click", відкритиПомічника);
+  // Вікно змінило розмір — Тайгер повертається, щоб не загубитися за краєм
+  window.addEventListener("resize", function () { if (позиціяХодока) тайгерДодому(true); });
+  запланувати(9000);   // перша прогулянка — невдовзі після відкриття сайту
 
   function маршрут() {
     const частини = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
