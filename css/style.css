@@ -394,6 +394,9 @@ body.vik-7-9 .tiger__pic { width: 72px; height: 72px; animation: none; }
 .hero + .tiger .tiger__pic,
 .empty .tiger__pic,
 .lesson-inline__done .tiger__pic { width: 150px; height: 150px; }
+/* На головній репліка стоїть на рівні голови Тайгера, а не біля лап */
+.hero + .tiger { align-items: flex-start; }
+.hero + .tiger .tiger__bubble { margin-top: 14px; }
 
 /* ---------- Живий Тайгер ----------
    SVG вбудований у сторінку (js/tiger-art.js), групи мають класи t-…
