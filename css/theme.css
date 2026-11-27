@@ -427,7 +427,9 @@ code {
   z-index: 6;
   display: flex;
   gap: 8px;
-  margin: 14px -8px 20px;
+  margin: 14px 0 20px;           /* без від'ємних відступів — не виходить за край сторінки */
+  box-sizing: border-box;
+  max-width: 100%;
   padding: 7px;
   border-radius: 999px;
   border: 1px solid var(--glass-line);
@@ -495,7 +497,7 @@ code {
 #roz-poyasnennia, #roz-kroky, #roz-pytannia, #urok { scroll-margin-top: 150px; }
 #roz-praktyka { scroll-margin-top: 220px; }   /* ще й під липкою шкалою виконання */
 @media (max-width: 520px) {
-  .topic-nav { top: 74px; margin-left: -4px; margin-right: -4px; padding: 5px; gap: 6px; }
+  .topic-nav { top: 74px; padding: 5px; gap: 6px; }
   .topic-nav__btn { padding: 8px 13px; font-size: .86rem; }
   .topic-nav ~ .lesson-inline .lesson-inline__status { top: 130px; }
   #roz-poyasnennia, #roz-kroky, #roz-pytannia, #urok { scroll-margin-top: 140px; }
