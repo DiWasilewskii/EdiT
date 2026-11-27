@@ -1221,6 +1221,5 @@ body.vik-7-9 .helper__btn { animation: none; }
 /* Підвал не ховається під кнопкою помічника */
 .footer .footer__inner { padding-right: 112px; }
 @media (max-width: 520px) {
-  .footer .footer__inner { padding-right: 0; }
-  .footer { padding-bottom: 84px; }
+  .footer .footer__inner { padding-right: 0; }   /* лого й YouTube по центру — Тайгер у кутку їм не заважає */
 }
