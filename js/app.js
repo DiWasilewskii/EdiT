@@ -465,6 +465,26 @@
       return практична ? '<div class="lesson-mark"><span class="lesson-mark__num">Урок ' + номер + "</span> " + текст + "</div>" : "";
     }
 
+    // Файли-заготовки в Google Документах і Таблицях (поле «файли»).
+    // Кнопка «Зробити копію» відкриває /copy — учень отримує власну копію на своєму Диску.
+    function блокФайлів(файли) {
+      if (!файли || !файли.length) return "";
+      return '<div class="files"><h3 class="files__title">Файли для роботи</h3><ul class="files__list">' +
+        файли.map(function (ф) {
+          const таблиця = ф.тип === "таблиця";
+          const адреса = "https://docs.google.com/" + (таблиця ? "spreadsheets" : "document") + "/d/" + encodeURIComponent(ф.id);
+          return '<li class="file file--' + (таблиця ? "sheet" : "doc") + '">' +
+            '<span class="file__icon">' + ui(таблиця ? "sheet" : "doc") + "</span>" +
+            '<span class="file__body"><span class="file__kind">' + (таблиця ? "Google Таблиця" : "Google Документ") + "</span>" +
+            '<span class="file__name">' + esc(ф.назва) + "</span></span>" +
+            '<span class="file__actions">' +
+            '<a class="btn btn--leaf file__btn" href="' + адреса + '/copy" target="_blank" rel="noopener">Зробити копію</a>' +
+            '<a class="btn btn--ghost file__btn" href="' + адреса + '/preview" target="_blank" rel="noopener">Переглянути</a>' +
+            "</span></li>";
+        }).join("") +
+        '</ul><p class="files__hint">«Зробити копію» збереже файл на твоєму Google Диску — працюй у своїй копії.</p></div>';
+    }
+
     html += мітка(1, "Вивчаємо тему");
 
     // 1. Пояснення
@@ -477,7 +497,7 @@
     // 3. Покрокове завдання (у темах на два уроки — «Завдання для вивчення»)
     if (кроки.length) {
       html += '<section class="block" id="roz-kroky"><h2>' + ui("steps") + " " + назваКроків + "</h2>" +
-        списокКроків(кроки) + "</section>";
+        блокФайлів(тема.файли) + списокКроків(кроки) + "</section>";
     }
 
     if (тема.підказка) html += тайгер(тема.підказка);
@@ -501,7 +521,7 @@
       html += мітка(2, "Практична робота");
       html += '<section class="block practical" id="roz-praktychna"><h2>' + ui("star") + " Практична робота</h2>" +
         (практична.мета ? '<p class="practical__goal"><b>Мета:</b> ' + практична.мета + "</p>" : "") +
-        списокКроків(практична.кроки || []);
+        блокФайлів(практична.файли) + списокКроків(практична.кроки || []);
       if (практична.ускладнення && практична.ускладнення.length) {
         html += '<div class="practical__extra"><h3>Ускладнення — для тих, хто впорався швидше</h3><ul>' +
           практична.ускладнення.map(function (у) { return "<li>" + у + "</li>"; }).join("") + "</ul></div>";

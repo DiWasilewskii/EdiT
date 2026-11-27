@@ -384,6 +384,37 @@ code {
   background: #FFF3E8;
   border-left: 4px solid var(--orange);
 }
+/* Файли-заготовки в Google Документах і Таблицях */
+.files {
+  margin: 14px 0 18px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #F7F9FC;
+  border: 1px solid #DCE4EF;
+}
+.files__title { margin: 0 0 10px; font: 700 1rem var(--font-head); color: var(--jungle); }
+.files__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff;
+  border-left: 5px solid #2B66C9;
+}
+.file--sheet { border-left-color: #1E7B45; }
+.file__icon { flex: none; display: flex; }
+.file__icon .ico { width: 28px; height: 28px; }
+.file__body { flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; }
+.file__kind { font-size: .8rem; font-weight: 700; color: #2B66C9; }
+.file--sheet .file__kind { color: #1E7B45; }
+.file__name { font-weight: 700; overflow-wrap: anywhere; }
+.file__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.file__btn { padding: 8px 16px; font-size: .9rem; }
+.files__hint { margin: 10px 0 0; font-size: .85rem; color: #5A6B60; }
+
 #roz-praktychna { scroll-margin-top: 150px; }
 @media (max-width: 520px) { #roz-praktychna { scroll-margin-top: 140px; } }
 
