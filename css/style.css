@@ -1079,3 +1079,148 @@ body.vik-7-9 .topic-card__icon { background: var(--savanna-lt); }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .logo__word { opacity: 1; }
 }
+
+/* =====================================================================
+   ТАЙГЕР-ПОМІЧНИК (js/app.js, розділ «ТАЙГЕР-ПОМІЧНИК»)
+   Кнопка в правому нижньому куті + віконце з питаннями й підказками
+   ===================================================================== */
+/* Тайгер на сторінці — теж кнопка, що кличе помічника */
+.tiger__btn {
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: 50%;
+  line-height: 0;
+  transition: transform .15s ease;
+}
+.tiger__btn:hover { transform: scale(1.05) rotate(-2deg); }
+.tiger__btn:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
+
+.helper {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  pointer-events: none;            /* клікабельні лише кнопка й віконце */
+}
+.helper > * { pointer-events: auto; }
+
+.helper__btn {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  filter: drop-shadow(0 6px 10px rgba(31, 58, 43, .45));
+  cursor: pointer;
+  line-height: 0;
+  animation: helper-hop 6s ease-in-out 2s infinite;
+  transition: transform .15s ease;
+}
+.helper__btn:hover { transform: scale(1.07); }
+.helper__btn:focus-visible { outline: 3px solid var(--jungle); outline-offset: 3px; }
+.helper.is-open .helper__btn { animation: none; }
+.helper__pic { display: block; width: 100%; height: 100%; }
+.helper__badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #fff;
+  font: 800 .9rem/24px var(--font-head);
+  text-align: center;
+  box-shadow: 0 0 0 2px #fff;
+}
+.helper.is-open .helper__badge { display: none; }
+@keyframes helper-hop {
+  0%, 88%, 100% { transform: translateY(0); }
+  92% { transform: translateY(-10px); }
+  96% { transform: translateY(0); }
+}
+
+.helper__panel {
+  position: relative;
+  width: min(360px, calc(100vw - 32px));
+  max-height: calc(100vh - 130px);
+  overflow-y: auto;
+  padding: 16px;
+  border-radius: 22px 22px 6px 22px;
+  background: #fff;
+  border: 2px solid var(--savanna);
+  box-shadow: 0 22px 44px -16px rgba(31, 58, 43, .45);
+  animation: helper-in .2s ease-out;
+}
+.helper__panel[hidden] { display: none; }
+@keyframes helper-in {
+  from { opacity: 0; transform: translateY(10px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+.helper__close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--text);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.helper__close:hover { background: var(--savanna-lt); }
+.helper__head { display: flex; gap: 10px; align-items: flex-start; padding-right: 26px; }
+.helper__face { flex: 0 0 auto; width: 60px; height: 60px; }
+.helper__face-pic { display: block; width: 100%; height: 100%; }
+.helper__say p { margin: 2px 0 0; line-height: 1.45; }
+.helper__options { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.helper__opt {
+  padding: 10px 14px;
+  border: 2px solid var(--savanna);
+  border-radius: 14px;
+  background: var(--bg);
+  color: var(--text);
+  font: 700 .95rem var(--font-body);
+  text-align: left;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+}
+.helper__opt:hover { background: var(--savanna-lt); border-color: var(--orange); }
+.helper__opt:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+.helper__opt--main { background: var(--orange); border-color: var(--orange); text-align: center; }
+.helper__opt--main:hover { background: var(--orange-dark); border-color: var(--orange-dark); }
+.helper__opt--back { border-color: transparent; background: none; color: var(--leaf); }
+
+/* Блок, до якого прокрутив Тайгер, коротко світиться */
+.is-pointed { animation: helper-point 1.6s ease-out; }
+@keyframes helper-point {
+  0%, 40% { box-shadow: 0 0 0 4px var(--orange); }
+  100%    { box-shadow: 0 0 0 4px transparent; }
+}
+
+/* Старшим — без підстрибувань */
+body.vik-7-9 .helper__btn { animation: none; }
+
+@media (max-width: 520px) {
+  .helper { right: 12px; bottom: 12px; }
+  .helper__btn { width: 72px; height: 72px; }
+}
+
+/* Підвал не ховається під кнопкою помічника */
+.footer__inner { padding-right: 84px; }
+@media (max-width: 520px) {
+  .footer__inner { padding-right: 0; }
+  .footer { padding-bottom: 84px; }
+}
