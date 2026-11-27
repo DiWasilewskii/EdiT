@@ -197,9 +197,20 @@
        happy — радіє          think — думає
        oops  — здивований
      ================================================================= */
+  // Малюнок Тайгера вбудовується в сторінку (js/tiger-art.js), щоб він міг
+  // кліпати, махати лапою і стежити очима за курсором (js/tiger-eyes.js).
+  // Якщо tiger-art.js не завантажився — показуємо звичайну картинку.
+  function малюнокТайгера(поза, клас, підпис) {
+    const svg = window.TIGER_ART && window.TIGER_ART[поза];
+    if (!svg) {
+      return '<img class="' + клас + '" src="img/tiger/' + поза + '.svg" alt="' + (підпис || "") + '" width="96" height="96">';
+    }
+    return '<span class="' + клас + ' tiger-art"' + (підпис ? ' role="img" aria-label="' + підпис + '"' : "") + ">" + svg + "</span>";
+  }
+
   function тайгер(текст, поза) {
     return '<aside class="tiger" aria-label="Підказка">' +
-      '<img class="tiger__pic" src="img/tiger/' + (поза || "tip") + '.svg" alt="" width="96" height="96">' +
+      малюнокТайгера(поза || "tip", "tiger__pic") +
       '<div class="tiger__bubble"><span class="tiger__name">Тайгер</span>' + текст + "</div></aside>";
   }
 
@@ -1176,7 +1187,7 @@
           for (let x = 0; x < N; x++) {
             const тут = гравець.x === x && гравець.y === ряд;
             const зіркаТут = зірка && зірка.x === x && зірка.y === ряд;
-            html += '<div class="game__cell">' + (тут ? '<img class="game__tiger" src="img/tiger/hello.svg" alt="Тайгер">' : зіркаТут ? "⭐" : "") + "</div>";
+            html += '<div class="game__cell">' + (тут ? малюнокТайгера("hello", "game__tiger", "Тайгер") : зіркаТут ? "⭐" : "") + "</div>";
           }
         }
         дошка.innerHTML = html;
