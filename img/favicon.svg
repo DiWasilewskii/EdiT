@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Фавікон EdiT: помаранчева плитка з тигровими смугами і літерою «T» -->
+  <defs>
+    <clipPath id="r"><rect width="64" height="64" rx="14"/></clipPath>
+  </defs>
+  <g clip-path="url(#r)">
+    <rect width="64" height="64" fill="#E8731C"/>
+    <g fill="#1C1A17">
+      <path d="M0 6 C8 9 16 7 24 11 C16 14 8 14 0 13 Z"/>
+      <path d="M64 50 C56 47 48 49 40 45 C48 42 56 42 64 43 Z"/>
+      <path d="M0 52 C6 54 11 53 16 56 C11 58 6 58 0 58 Z"/>
+      <path d="M64 8 C58 10 53 9 48 12 C53 14 58 14 64 14 Z"/>
+    </g>
+  </g>
+  <text x="32" y="47" text-anchor="middle" font-family="Unbounded, Arial Black, Arial, sans-serif" font-weight="800" font-size="42" fill="#fff" stroke="#1C1A17" stroke-width="3" paint-order="stroke">T</text>
+</svg>
