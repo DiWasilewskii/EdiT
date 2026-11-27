@@ -1219,8 +1219,8 @@ body.vik-7-9 .helper__btn { animation: none; }
 }
 
 /* Підвал не ховається під кнопкою помічника */
-.footer__inner { padding-right: 84px; }
+.footer .footer__inner { padding-right: 112px; }
 @media (max-width: 520px) {
-  .footer__inner { padding-right: 0; }
+  .footer .footer__inner { padding-right: 0; }
   .footer { padding-bottom: 84px; }
 }
