@@ -915,46 +915,121 @@ body.vik-2-4 .option { padding: 14px 24px; font-size: 1.1rem; }
 .blank-input.is-wrong { border-color: var(--wrong); background: #F4DDD5; }
 .word-bank { display: flex; flex-wrap: wrap; gap: 8px; }
 
-/* Блоки як у Скретчі (кольори розділів Скретчу, щоб діти їх впізнавали) */
+/* ---------- Блоки як у Скретчі ----------
+   Кольори розділів Скретчу, «пазлові» виступи між блоками, шапка в
+   «коли натиснуто» і С-подібні «повторити» / «завжди» / «якщо». */
+.blk-script {                      /* робоче поле, на якому лежить програма */
+  --ws: #F9F9F9;
+  padding: 26px 16px 22px;
+  border: 1px solid #DCDCDC;
+  border-radius: 12px;
+  background: var(--ws);
+  overflow-x: auto;
+}
 .blk {
+  --c: #4C97FF;                    /* колір блока */
+  --d: #3373CC;                    /* темніший контур */
+  position: relative;
   width: fit-content;
+  min-width: 110px;
   max-width: 100%;
-  margin: 3px 0;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-weight: 800;
-  font-size: .95rem;
-  color: #1C1A17;
+  margin: 0;
+  padding: 9px 12px 9px 14px;
+  border: 1px solid var(--d);
+  border-radius: 5px;
+  background: var(--c);
+  color: #fff;
+  font: 700 .92rem/1.7 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  white-space: nowrap;
 }
-.blk--event   { background: #FFBF00; border-radius: 18px 18px 8px 8px; }
-.blk--motion  { background: #6FA8FF; }
-.blk--control { background: #FFAB19; }
+/* Виступ знизу, що «входить» у наступний блок */
+.blk::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  left: 14px;
+  bottom: -10px;
+  width: 30px;
+  height: 10px;
+  background: var(--c);
+  clip-path: polygon(0 0, 100% 0, 76% 100%, 24% 100%);
+}
+.blk--motion  { --c: #4C97FF; --d: #3373CC; }
+.blk--control { --c: #FFAB19; --d: #CF8B17; }
+.blk--forever::after { display: none; }   /* «завжди» знизу нічого не приєднаєш */
+
+/* «Коли натиснуто» — блок-шапка з куполом зверху */
+.blk--event { --c: #FFBF00; --d: #CC9900; padding-top: 16px; border-radius: 0 5px 5px 5px; }
+.blk--event::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: -14px;
+  width: 104px;
+  height: 26px;
+  background: var(--c);
+  border: 1px solid var(--d);
+  border-bottom: 0;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+
+/* С-блок: «рука» ліворуч і знизу, всередині — вкладені блоки */
+.blk--control { padding-bottom: 0; }
 .blk-body {
-  margin: 6px 0 4px 14px;
-  padding-left: 8px;
-  border-left: 4px solid rgba(28,26,23,.25);
+  position: relative;
+  min-height: 26px;
+  margin: 8px -13px 24px 2px;      /* праворуч «отвір» відкритий, як у Скретчі */
+  border: 1px solid var(--d);
+  border-right: 0;
+  border-radius: 5px 0 0 5px;
+  background: var(--ws, #F9F9F9);
+  white-space: normal;
 }
+/* Виступ С-блока всередину «отвору» */
+.blk-body::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  left: 12px;
+  top: -1px;
+  width: 30px;
+  height: 10px;
+  background: var(--c);
+  clip-path: polygon(0 0, 100% 0, 76% 100%, 24% 100%);
+}
+
+/* Віконця з числами — білі «пігулки» */
 .blk-input, .blk-val {
   display: inline-block;
-  min-width: 3.2em;
-  margin: 0 2px;
-  padding: 2px 8px;
+  min-width: 2.8em;
+  margin: 0 4px;
+  padding: 1px 10px;
+  border: 1px solid rgba(0, 0, 0, .15);
   border-radius: 999px;
   background: #fff;
   text-align: center;
-  font: 800 .95rem var(--font-body);
-  color: var(--text);
+  font: 700 .9rem/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #575E75;
 }
-.blk-input { width: 4.5em; border: 2px solid var(--jungle); }
-.blk-val { opacity: .85; }
+/* Ті, що можна змінювати, — з помітною рамкою */
+.blk-input { width: 4.2em; border: 2px solid var(--jungle); color: var(--text); }
+.blk-input:focus { outline: 3px solid #fff; outline-offset: 1px; }
+
+/* Умова «клавіша … натиснута?» — шестикутник «Датчиків» */
 .blk-cond {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: 6px;
-  background: #E8D9B8;
-  font-weight: 700;
+  margin: 0 4px;
+  padding: 1px 16px;
+  background: #5CB1D6;
+  color: #fff;
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0 50%);
 }
-.blk--if.is-active { box-shadow: 0 0 0 3px var(--jungle); }
+/* Блок, що спрацював, світиться жовтим, як у Скретчі */
+.blk--if.is-active { filter: drop-shadow(0 0 3px #FFF200) drop-shadow(0 0 3px #FFF200); }
+
+/* Зелений прапорець */
+.blk-flag { display: inline-block; width: 1.3em; height: 1.3em; margin-left: 4px; vertical-align: -.3em; }
+.turtle__run .blk-flag { margin: 0 4px 0 0; }
 
 /* Черепашка */
 .turtle { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }

@@ -681,6 +681,9 @@
   /* ---------- Типи слайдів ----------
      Кожна функція отримує: с — дані слайда, el — місце на сторінці,
      готово — викликати, коли вправу виконано правильно. */
+  // Зелений прапорець, як у Скретчі (для блоку «коли натиснуто» і кнопки запуску)
+  const ПРАПОРЕЦЬ = '<svg class="blk-flag" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5v13" stroke="#45993D" stroke-width="1.6" stroke-linecap="round"/><path d="M3.6 2.4c2.6-1.6 4.4 1.2 7.6-.2.4-.2.8.1.8.5v6.2c0 .3-.2.5-.4.6-3.3 1.4-5-1.4-8 .3z" fill="#4CBF56" stroke="#45993D" stroke-width=".9" stroke-linejoin="round"/></svg>';
+
   const ТИПИ_СЛАЙДІВ = {
 
     /* Звичайний слайд з поясненням */
@@ -986,7 +989,7 @@
           '<div class="blk blk--motion">поворот ↻ на ' + (перша ? поле("кут") : '<span class="blk-val" data-show="кут">' + п.кут + "</span>") + " градусів</div>";
       }
 
-      let програма = '<div class="blk blk--event">коли натиснуто 🏴</div>';
+      let програма = '<div class="blk blk--event">коли натиснуто ' + ПРАПОРЕЦЬ + '</div>';
       if (с.лінійно) {
         for (let і = 0; і < п.повторень; і++) програма += пара(і === 0);
       } else {
@@ -1000,8 +1003,8 @@
 
       el.innerHTML = заголовокВправи(с) +
         (с.підказкаЗавдання ? '<p class="slide__hint">' + с.підказкаЗавдання + "</p>" : "") +
-        '<div class="turtle"><div class="turtle__code">' + програма +
-        '<button type="button" class="btn btn--orange turtle__run" data-run>🏴 Запустити</button></div>' +
+        '<div class="turtle"><div class="turtle__code"><div class="blk-script">' + програма + '</div>' +
+        '<button type="button" class="btn btn--orange turtle__run" data-run>' + ПРАПОРЕЦЬ + ' Запустити</button></div>' +
         '<canvas class="turtle__canvas" width="320" height="320" aria-label="Малюнок черепашки"></canvas></div>' +
         '<p class="feedback" aria-live="polite"></p>';
 
@@ -1187,8 +1190,8 @@
         '<button type="button" data-key="ArrowDown" aria-label="Вниз">↓</button>' +
         '<button type="button" data-key="ArrowRight" aria-label="Праворуч">→</button></div></div>' +
         '<div class="game__side"><p class="slide__hint">Клацни по полю, щоб керувати стрілками на клавіатурі. Ось програма цієї гри. Блок, що спрацював, підсвічується:</p>' +
-        '<div class="game__code"><div class="blk blk--event">коли натиснуто 🏴</div>' +
-        '<div class="blk blk--control">завжди<div class="blk-body">' +
+        '<div class="game__code blk-script"><div class="blk blk--event">коли натиснуто ' + ПРАПОРЕЦЬ + '</div>' +
+        '<div class="blk blk--control blk--forever">завжди<div class="blk-body">' +
         Object.keys(команди).map(function (к) {
           return '<div class="blk blk--control blk--if" data-key="' + к + '">якщо <span class="blk-cond">' + команди[к].умова +
             '</span> то<div class="blk-body"><div class="blk blk--motion">' + команди[к].дія + "</div></div></div>";
